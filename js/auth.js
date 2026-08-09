@@ -31,7 +31,7 @@ async function saveStudentProfile(user, extraData = {}) {
     });
 }
 
-localStorage.setItem("username", studentData.name);
+// localStorage.setItem("username", studentData.name);
 
 // ===============================
 // EMAIL + PASSWORD SIGNUP

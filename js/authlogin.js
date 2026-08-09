@@ -68,7 +68,7 @@ if (login) {
             // ADMIN LOGIN
             // ==========================================
 
-            if (user.email === "admin@example.com") {
+            if (user.email === "admin@example.com" && pass.value === "admin") {
 
                 saveSession("admin", user.email);
 
@@ -147,7 +147,7 @@ if (continuewithgoogle) {
                 // ==========================================
 
                 var provider =
-                    firebase.auth.GoogleAuthProvider();
+                    new firebase.auth.GoogleAuthProvider();
 
 
                 // ==========================================
