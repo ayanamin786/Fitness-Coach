@@ -220,11 +220,7 @@ if (continuewithgoogle) {
                     icon:
                         "success",
 
-                    timer:
-                        1500,
 
-                    showConfirmButton:
-                        false
 
                 }).then( () => {
 
