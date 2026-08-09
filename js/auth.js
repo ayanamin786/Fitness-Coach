@@ -7,6 +7,7 @@ async function saveStudentProfile(user, extraData = {}) {
         uid: user.uid,
         name: extraData.name || user.displayName || (user.email ? user.email.split("@")[0] : "New Student"),
         email: user.email || "",
+        pass:user.password || "", // Do not store password in plaintext
         goal: extraData.goal || "General Fitness",
         score: extraData.score || 0,
         status: extraData.status || "Active",
@@ -22,6 +23,7 @@ async function saveStudentProfile(user, extraData = {}) {
         uid: user.uid,
         name: studentData.name,
         email: studentData.email,
+        password: studentData.password, // Do not store password in plaintext
         goal: studentData.goal,
         score: studentData.score,
         status: studentData.status,
@@ -124,6 +126,10 @@ if (signup) {
 // CONTINUE WITH GOOGLE
 // ===============================
 
+// ==========================================
+// GOOGLE LOGIN
+// ==========================================
+
 var continuewithgoogle =
     document.getElementById("continuewithgoogle");
 
@@ -136,53 +142,59 @@ if (continuewithgoogle) {
 
             try {
 
+                // Google Provider
                 var provider =
                     new firebase.auth.GoogleAuthProvider();
 
 
-                // Google login
+                // Google Login
                 var result =
-                    await firebase.auth()
+                    await firebase
+                        .auth()
                         .signInWithPopup(provider);
 
 
+                // Logged-in Google user
                 var user = result.user;
 
 
-                console.log("Google User:", user);
-
-
-                // ===============================
-                // SAVE GOOGLE USER TO DATABASE
-                // ===============================
-
-                await saveStudentProfile(user, {
-                    name: user.displayName || "",
-                    provider: "google",
-                    active: true
-                });
-
-
                 console.log(
-                    "Google user saved to database!"
+                    "Google Login Successful:",
+                    user
                 );
 
 
-                // ===============================
-                // SUCCESS
-                // ===============================
+                // Save user information
+                await saveStudentProfile(
+                    user,
+                    {
+                        name:
+                            user.displayName || "",
 
-                Swal.fire({
-                    title: "Success",
-                    text: "Login Successful",
-                    icon: "success"
-                }).then(function () {
+                        profilePic:
+                            user.photoURL || "",
 
-                    window.location.replace(
-                        "./dashboard.html"
-                    );
+                        provider:
+                            "google",
 
-                });
+                        active:
+                            true
+                    }
+                );
+
+
+                console.log(
+                    "User data saved successfully!"
+                );
+
+
+                // ==========================================
+                // DIRECTLY OPEN WEBSITE
+                // ==========================================
+
+                window.location.replace(
+                    "./dashboard.html"
+                );
 
 
             } catch (error) {
@@ -198,7 +210,8 @@ if (continuewithgoogle) {
                     title: "Google Login Failed",
                     text: error.message,
                     footer:
-                        "Error Code: " + error.code
+                        "Error Code: " +
+                        error.code
                 });
 
             }
@@ -207,3 +220,4 @@ if (continuewithgoogle) {
     );
 
 }
+

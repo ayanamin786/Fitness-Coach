@@ -104,3 +104,159 @@ if (login) {
 
 }
 
+
+// ==========================================
+// GOOGLE LOGIN
+// ==========================================
+
+
+// ==========================================
+// GOOGLE LOGIN
+// ==========================================
+
+var continuewithgoogle =
+    document.getElementById("continuewithgoogle");
+
+
+if (continuewithgoogle) {
+
+    continuewithgoogle.addEventListener(
+        "click",
+        async function () {
+
+            try {
+
+                // ==========================================
+                // GOOGLE AUTH PROVIDER
+                // ==========================================
+
+                var provider =
+                    new firebase.auth.GoogleAuthProvider();
+
+
+                // ==========================================
+                // GOOGLE LOGIN
+                // ==========================================
+
+                var result =
+                    await firebase
+                        .auth()
+                        .signInWithPopup(provider);
+
+
+                // ==========================================
+                // GET LOGGED-IN USER
+                // ==========================================
+
+                var user = result.user;
+
+
+                console.log(
+                    "Google Login User:",
+                    user
+                );
+
+
+                // ==========================================
+                // SAVE / UPDATE USER PROFILE
+                // ==========================================
+
+                await saveStudentProfile(
+                    user,
+                    {
+
+                        // Google account name
+                        name:
+                            user.displayName || "",
+
+                        // Google profile picture
+                        profilePic:
+                            user.photoURL || "",
+
+                        // Login provider
+                        provider:
+                            "google",
+
+                        active:
+                            true
+                    }
+                );
+
+
+                console.log(
+                    "Google user login data saved!"
+                );
+
+
+                // ==========================================
+                // SUCCESS MESSAGE
+                // ==========================================
+
+                Swal.fire({
+
+                    title:
+                        "Login Successful!",
+
+                    text:
+                        "Welcome back, " +
+                        (user.displayName || "User"),
+
+                    icon:
+                        "success",
+
+                    timer:
+                        1500,
+
+                    showConfirmButton:
+                        false
+
+                }).then(function () {
+
+                    // ==========================================
+                    // GO TO DASHBOARD
+                    // ==========================================
+
+                    window.location.replace(
+                        "./dashboard.html"
+                    );
+
+                });
+
+
+            } catch (error) {
+
+                // ==========================================
+                // GOOGLE LOGIN ERROR
+                // ==========================================
+
+                console.error(
+                    "Google Login Error:",
+                    error
+                );
+
+
+                Swal.fire({
+
+                    icon:
+                        "error",
+
+                    title:
+                        "Google Login Failed",
+
+                    text:
+                        error.message,
+
+                    footer:
+                        "Error Code: " +
+                        error.code
+                });
+
+            }
+
+        }
+    );
+
+}
+
+
+
