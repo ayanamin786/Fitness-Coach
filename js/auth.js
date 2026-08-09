@@ -7,7 +7,6 @@ async function saveStudentProfile(user, extraData = {}) {
         uid: user.uid,
         name: extraData.name || user.displayName || (user.email ? user.email.split("@")[0] : "New Student"),
         email: user.email || "",
-        pass:user.password || "", // Do not store password in plaintext
         goal: extraData.goal || "General Fitness",
         score: extraData.score || 0,
         status: extraData.status || "Active",
@@ -23,7 +22,6 @@ async function saveStudentProfile(user, extraData = {}) {
         uid: user.uid,
         name: studentData.name,
         email: studentData.email,
-        password: studentData.password, // Do not store password in plaintext
         goal: studentData.goal,
         score: studentData.score,
         status: studentData.status,
@@ -158,16 +156,16 @@ if (continuewithgoogle) {
                 // SAVE GOOGLE USER TO DATABASE
                 // ===============================
 
-                await saveStudentProfile(user, {
-                    name: user.displayName || "",
-                    provider: "google",
-                    active: true
-                });
+                // await saveStudentProfile(user, {
+                //     name: user.displayName || "",
+                //     provider: "google",
+                //     active: true
+                // });
 
 
-                console.log(
-                    "Google user saved to database!"
-                );
+                // console.log(
+                //     "Google user saved to database!"
+                // );
 
 
                 // ===============================
