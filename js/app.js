@@ -17,7 +17,403 @@ function calcCalories(){let w=+document.getElementById("weight").value||70,h=+do
 function chatReply(m){m=m.toLowerCase();if(m.includes("water"))return"Your target is 8 glasses. You are currently at 6/8.";if(m.includes("workout"))return"Today's workout includes Push Ups, Goblet Squats, Dumbbell Row, Shoulder Press, Plank and Lunges.";if(m.includes("bmi"))return"Your saved BMI is "+(S.get("bmi",22.9))+".";if(m.includes("eat")||m.includes("nutrition"))return"Try the Protein Oat Bowl, Chicken Power Bowl, Greek Yogurt + Berries and Salmon & Rice.";return"I can help with workout, water, BMI, nutrition and progress."}
 function sendChat(t){if(!t.trim())return;let b=document.getElementById("chatMessages");if(!b)return; b.innerHTML+=`<div class="message user"><div><p>${t}</p></div></div>`;setTimeout(()=>{b.innerHTML+=`<div class="message bot"><span class="bot-avatar">✦</span><div><small>AI FITNESS COACH</small><p>${chatReply(t)}</p></div></div>`;b.scrollTop=b.scrollHeight},350)}
 const users=[["Ayan","Muscle Gain",87,"Active"],["Ahmed","Weight Loss",81,"Active"],["Sara","Maintenance",76,"Active"],["Hamza","Muscle Gain",69,"Inactive"],["Maha","Weight Loss",91,"Active"]];
-function renderUsers(){let e=document.getElementById("userTable");if(e)e.innerHTML=users.map(u=>`<tr><td><b>${u[0]}</b></td><td>Completed workout</td><td>${u[1]}</td><td><b>${u[2]}</b></td><td><span class="badge-status">${u[3]}</span></td></tr>`).join("")} 
+function renderUsers(){
+
+// ==========================================================
+// FIREBASE REALTIME ADMIN DASHBOARD
+// ==========================================================
+
+// Firebase database reference
+var studentsRef = firebase
+    .database()
+    .ref("students");
+
+
+// ==========================================================
+// REALTIME STUDENT DATA
+// ==========================================================
+
+studentsRef.on(
+    "value",
+    function(snapshot) {
+
+        console.log(
+            "Firebase students updated!"
+        );
+
+
+        // Get all students
+        var data =
+            snapshot.val() || {};
+
+
+        // Convert Firebase object to array
+        var students =
+            Object.keys(data).map(function(uid) {
+
+                return {
+                    uid: uid,
+                    ...data[uid]
+                };
+
+            });
+
+
+        // ======================================================
+        // TOTAL STUDENTS
+        // ======================================================
+
+        var totalStudents =
+            students.length;
+
+
+        var totalUsers =
+            document.getElementById(
+                "totalUsers"
+            );
+
+
+        if (totalUsers) {
+
+            totalUsers.textContent =
+                totalStudents;
+
+        }
+
+
+        // ======================================================
+        // ACTIVE STUDENTS
+        // ======================================================
+
+        var activeStudents =
+            students.filter(function(student) {
+
+                return (
+                    student.active === true ||
+                    student.status === "Active"
+                );
+
+            });
+
+
+        var activeUsers =
+            document.getElementById(
+                "activeUsers"
+            );
+
+
+        if (activeUsers) {
+
+            activeUsers.textContent =
+                activeStudents.length;
+
+        }
+
+
+        // ======================================================
+        // PLANS / GOALS
+        // ======================================================
+
+        var plans =
+            students.filter(function(student) {
+
+                return (
+                    student.goal &&
+                    student.goal.trim() !== ""
+                );
+
+            });
+
+
+        var plansGenerated =
+            document.getElementById(
+                "plansGenerated"
+            );
+
+
+        if (plansGenerated) {
+
+            plansGenerated.textContent =
+                plans.length;
+
+        }
+
+
+        // ======================================================
+        // FIREBASE SYNC COUNT
+        // ======================================================
+
+        var aiConversations =
+            document.getElementById(
+                "aiConversations"
+            );
+
+
+        if (aiConversations) {
+
+            aiConversations.textContent =
+                students.length;
+
+        }
+
+
+        // ======================================================
+        // RENDER STUDENT TABLE
+        // ======================================================
+
+        renderRealtimeStudents(
+            students
+        );
+
+
+        // ======================================================
+        // SYNC STATUS
+        // ======================================================
+
+        var syncBadge =
+            document.getElementById(
+                "syncBadge"
+            );
+
+
+        if (syncBadge) {
+
+            syncBadge.textContent =
+                "● Live — Firebase synced";
+
+        }
+
+    },
+
+    function(error) {
+
+        console.error(
+            "Firebase Realtime Error:",
+            error
+        );
+
+
+        var syncBadge =
+            document.getElementById(
+                "syncBadge"
+            );
+
+
+        if (syncBadge) {
+
+            syncBadge.textContent =
+                "Firebase connection error";
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// RENDER REALTIME STUDENT TABLE
+// ==========================================================
+
+function renderRealtimeStudents(
+    students
+) {
+
+    var table =
+        document.getElementById(
+            "userTable"
+        );
+
+
+    if (!table) return;
+
+
+    // No students
+    if (students.length === 0) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="text-align:center;padding:30px;">
+                    No students registered yet.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    // Sort newest students first
+    students.sort(function(a, b) {
+
+        return (
+            (b.createdAt || 0) -
+            (a.createdAt || 0)
+        );
+
+    });
+
+
+    // Create rows
+    table.innerHTML =
+        students.map(function(student) {
+
+
+            // Student name
+            var name =
+                student.name ||
+                (
+                    student.email
+                        ? student.email.split("@")[0]
+                        : "Unknown Student"
+                );
+
+
+            // Student goal
+            var goal =
+                student.goal ||
+                "General Fitness";
+
+
+            // Score
+            var score =
+                student.score ?? 0;
+
+
+            // Status
+            var isActive =
+                student.active === true ||
+                student.status === "Active";
+
+
+            var status =
+                isActive
+                    ? "Active"
+                    : "Inactive";
+
+
+            return `
+
+                <tr>
+
+                    <!-- USER -->
+
+                    <td>
+
+                        <div style="
+                            display:flex;
+                            align-items:center;
+                            gap:10px;
+                        ">
+
+                            <img
+                                src="${
+                                    student.profilePic ||
+                                    "default-avatar.png"
+                                }"
+                                alt="Profile"
+                                style="
+                                    width:38px;
+                                    height:38px;
+                                    border-radius:50%;
+                                    object-fit:cover;
+                                "
+                                onerror="
+                                    this.src='default-avatar.png'
+                                "
+                            >
+
+                            <div>
+
+                                <b>
+                                    ${escapeHTML(name)}
+                                </b>
+
+                                <small style="
+                                    display:block;
+                                    opacity:.65;
+                                ">
+                                    ${escapeHTML(
+                                        student.email || ""
+                                    )}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- ACTION -->
+
+                    <td>
+                        <span>
+                            Completed workout
+                        </span>
+                    </td>
+
+
+                    <!-- GOAL -->
+
+                    <td>
+                        ${escapeHTML(goal)}
+                    </td>
+
+
+                    <!-- SCORE -->
+
+                    <td>
+                        <b>
+                            ${score}
+                        </b>
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td>
+
+                        <span
+                            class="badge-status ${
+                                isActive
+                                    ? "active"
+                                    : "inactive"
+                            }"
+                        >
+                            ${status}
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+// ==========================================================
+// BASIC HTML ESCAPE
+// ==========================================================
+
+function escapeHTML(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+
+} 
 document.querySelectorAll(".nav-item").forEach(a=>{if(location.pathname.endsWith(a.getAttribute("href")))a.classList.add("active")});
 const logout=document.getElementById("logoutBtn");if(logout)logout.onclick=()=>{localStorage.removeItem("fitnessLoggedIn");localStorage.removeItem("fitnessUserRole");localStorage.removeItem("fitnessUserEmail");location.href="login.html"};
 const themeToggle=document.getElementById("themeToggle");if(themeToggle){themeToggle.addEventListener("click",toggleTheme);updateThemeToggle();}

@@ -118,7 +118,7 @@ if (login) {
                         icon:
                             "success"
 
-                    }).then(function () {
+                    }).then(() => {
 
                         window.location.replace(
                             "admin.html"
