@@ -19,137 +19,639 @@ function sendChat(t){if(!t.trim())return;let b=document.getElementById("chatMess
 const users=[["Ayan","Muscle Gain",87,"Active"],["Ahmed","Weight Loss",81,"Active"],["Sara","Maintenance",76,"Active"],["Hamza","Muscle Gain",69,"Inactive"],["Maha","Weight Loss",91,"Active"]];
 function renderUsers(){
 
-    // ==========================================================
-// ADMIN REALTIME SYSTEM
-// ==========================================================
+const S = {
+    get: (k, d) => {
+        try {
+            return JSON.parse(localStorage.getItem(k)) ?? d;
+        } catch {
+            return d;
+        }
+    },
 
-const studentsRef =
-    firebase.database().ref("students");
+    set: (k, v) => {
+        localStorage.setItem(k, JSON.stringify(v));
+    }
+};
 
-const presenceRef =
-    firebase.database().ref("presence");
 
+/* =========================================================
+   THEME
+========================================================= */
+
+function applyTheme(theme) {
+    const resolved = theme || S.get("theme", "system");
+
+    if (resolved === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+    } 
+    else if (resolved === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+    } 
+    else {
+        document.documentElement.removeAttribute("data-theme");
+    }
+
+    document.documentElement.style.colorScheme =
+        resolved === "light"
+            ? "light"
+            : resolved === "dark"
+                ? "dark"
+                : "light";
+}
+
+
+function toggleTheme() {
+    const current = S.get("theme", "system");
+
+    const next =
+        current === "light"
+            ? "dark"
+            : "light";
+
+    S.set("theme", next);
+
+    applyTheme(next);
+
+    updateThemeToggle();
+}
+
+
+function updateThemeToggle() {
+    const button = document.getElementById("themeToggle");
+
+    if (!button) return;
+
+    const current = S.get("theme", "system");
+
+    if (current === "light") {
+        button.innerHTML = "☀️";
+    } 
+    else {
+        button.innerHTML = "🌙";
+    }
+}
+
+
+applyTheme(S.get("theme", "system"));
+
+
+/* =========================================================
+   WORKOUTS
+========================================================= */
+
+const workouts = [
+    ["Push Ups", "Chest", "3", "12", "10 min", "💪"],
+    ["Goblet Squats", "Legs", "4", "15", "12 min", "🏋️"],
+    ["Dumbbell Row", "Back", "3", "10", "10 min", "🔥"],
+    ["Shoulder Press", "Shoulders", "3", "12", "8 min", "⚡"],
+    ["Plank", "Core", "3", "45 sec", "5 min", "◈"],
+    ["Lunges", "Legs", "3", "12", "9 min", "🦵"]
+];
+
+
+function renderWorkouts() {
+
+    const el = document.getElementById("workoutGrid");
+
+    if (!el) return;
+
+    const d = S.get("workouts", []);
+
+    el.innerHTML = workouts.map((w, i) => `
+        <div class="workout-card">
+
+            <div class="exercise-top">
+                <span class="exercise-icon">${w[5]}</span>
+                <span class="status-chip">${w[1]}</span>
+            </div>
+
+            <div class="exercise-name">
+                ${w[0]}
+            </div>
+
+            <div class="exercise-meta">
+                Strength • Beginner friendly
+            </div>
+
+            <div class="exercise-data">
+                <span>${w[2]} sets</span>
+                <span>${w[3]} reps</span>
+                <span>${w[4]}</span>
+            </div>
+
+            <button
+                class="complete-btn ${d.includes(i) ? "done" : ""}"
+                onclick="toggleWorkout(${i})"
+            >
+                ${d.includes(i) ? "✓ Completed" : "Mark complete"}
+            </button>
+
+        </div>
+    `).join("");
+}
+
+
+function toggleWorkout(i) {
+
+    let d = S.get("workouts", []);
+
+    d = d.includes(i)
+        ? d.filter(x => x !== i)
+        : [...d, i];
+
+    S.set("workouts", d);
+
+    renderWorkouts();
+}
+
+
+/* =========================================================
+   MEALS
+========================================================= */
+
+const meals = [
+    ["BREAKFAST", "Protein Oat Bowl", 420, "28g", "08:00"],
+    ["LUNCH", "Chicken Power Bowl", 610, "46g", "13:00"],
+    ["SNACK", "Greek Yogurt + Berries", 280, "20g", "16:30"],
+    ["DINNER", "Salmon & Rice", 530, "42g", "20:00"]
+];
+
+
+function renderMeals() {
+
+    const el = document.getElementById("mealGrid");
+
+    if (!el) return;
+
+    const d = S.get("meals", []);
+
+    el.innerHTML = meals.map((m, i) => `
+        <div class="meal-card">
+
+            <span class="meal-type">
+                ${m[0]}
+            </span>
+
+            <h3>${m[1]}</h3>
+
+            <p>
+                Balanced fuel • ${m[4]}
+            </p>
+
+            <div class="meal-kcal">
+                ${m[2]}
+                <small>
+                    kcal · ${m[3]} protein
+                </small>
+            </div>
+
+            <button
+                class="meal-btn ${d.includes(i) ? "done" : ""}"
+                onclick="toggleMeal(${i})"
+            >
+                ${d.includes(i)
+                    ? "✓ Meal completed"
+                    : "Complete meal"}
+            </button>
+
+        </div>
+    `).join("");
+}
+
+
+function toggleMeal(i) {
+
+    let d = S.get("meals", []);
+
+    d = d.includes(i)
+        ? d.filter(x => x !== i)
+        : [...d, i];
+
+    S.set("meals", d);
+
+    renderMeals();
+}
+
+
+/* =========================================================
+   HABITS
+========================================================= */
+
+const habits = [
+    ["💧", "Water", "6 of 8 glasses"],
+    ["🥗", "Meals", "3 of 4 completed"],
+    ["🏋️", "Workout", "Today's session"],
+    ["😴", "Sleep", "7+ hours target"]
+];
+
+
+function renderHabits() {
+
+    const el = document.getElementById("habitList");
+
+    if (!el) return;
+
+    let h = S.get(
+        "habits",
+        [true, true, true, false]
+    );
+
+    el.innerHTML = habits.map((x, i) => `
+        <div class="habit-row">
+
+            <div class="habit-info">
+
+                <i>${x[0]}</i>
+
+                <div>
+                    <b>${x[1]}</b>
+                    <small>${x[2]}</small>
+                </div>
+
+            </div>
+
+            <button
+                class="check-btn ${h[i] ? "done" : ""}"
+                onclick="toggleHabit(${i})"
+            >
+                ${h[i] ? "✓" : "+"}
+            </button>
+
+        </div>
+    `).join("");
+
+
+    const p =
+        Math.round(
+            h.filter(Boolean).length / 4 * 100
+        );
+
+
+    const habitScore =
+        document.getElementById("habitScore");
+
+    if (habitScore) {
+        habitScore.textContent = p + "%";
+    }
+
+
+    const habitRing =
+        document.getElementById("habitRing");
+
+    if (habitRing) {
+        habitRing.textContent = p + "%";
+    }
+}
+
+
+function toggleHabit(i) {
+
+    let h = S.get(
+        "habits",
+        [true, true, true, false]
+    );
+
+    h[i] = !h[i];
+
+    S.set("habits", h);
+
+    renderHabits();
+}
+
+
+/* =========================================================
+   BMI
+========================================================= */
+
+function calcBMI() {
+
+    const height =
+        Number(
+            document.getElementById("height")?.value
+        );
+
+    const weight =
+        Number(
+            document.getElementById("weight")?.value
+        );
+
+
+    if (!height || !weight) {
+        return;
+    }
+
+
+    const bmi =
+        Number(
+            (
+                weight /
+                ((height / 100) ** 2)
+            ).toFixed(1)
+        );
+
+
+    const bmiValue =
+        document.getElementById("bmiValue");
+
+    const bmiStatus =
+        document.getElementById("bmiStatus");
+
+
+    if (bmiValue) {
+        bmiValue.textContent = bmi;
+    }
+
+
+    if (bmiStatus) {
+
+        bmiStatus.textContent =
+            bmi < 18.5
+                ? "UNDERWEIGHT"
+                : bmi < 25
+                    ? "NORMAL"
+                    : bmi < 30
+                        ? "OVERWEIGHT"
+                        : "OBESITY";
+    }
+
+
+    S.set("bmi", bmi);
+}
+
+
+/* =========================================================
+   CALORIES
+========================================================= */
+
+function calcCalories() {
+
+    const weight =
+        Number(
+            document.getElementById("weight")?.value
+        ) || 70;
+
+
+    const height =
+        Number(
+            document.getElementById("height")?.value
+        ) || 175;
+
+
+    const age = 13;
+
+
+    const calories =
+        Math.round(
+            (
+                10 * weight +
+                6.25 * height -
+                5 * age +
+                5
+            ) * 1.55 + 250
+        );
+
+
+    const calorieValue =
+        document.getElementById("calorieValue");
+
+
+    if (calorieValue) {
+        calorieValue.textContent =
+            calories.toLocaleString();
+    }
+
+
+    S.set("calories", calories);
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+function chatReply(m) {
+
+    m = m.toLowerCase();
+
+
+    if (m.includes("water")) {
+        return "Your target is 8 glasses. You are currently at 6/8.";
+    }
+
+
+    if (m.includes("workout")) {
+        return "Today's workout includes Push Ups, Goblet Squats, Dumbbell Row, Shoulder Press, Plank and Lunges.";
+    }
+
+
+    if (m.includes("bmi")) {
+        return "Your saved BMI is " +
+            S.get("bmi", 22.9) +
+            ".";
+    }
+
+
+    if (
+        m.includes("eat") ||
+        m.includes("nutrition")
+    ) {
+        return "Try the Protein Oat Bowl, Chicken Power Bowl, Greek Yogurt + Berries and Salmon & Rice.";
+    }
+
+
+    return "I can help with workout, water, BMI, nutrition and progress.";
+}
+
+
+function sendChat(t) {
+
+    if (!t.trim()) return;
+
+
+    const b =
+        document.getElementById("chatMessages");
+
+
+    if (!b) return;
+
+
+    b.innerHTML += `
+        <div class="message user">
+            <div>
+                <p>${safeHTML(t)}</p>
+            </div>
+        </div>
+    `;
+
+
+    setTimeout(() => {
+
+        b.innerHTML += `
+            <div class="message bot">
+
+                <span class="bot-avatar">
+                    ✦
+                </span>
+
+                <div>
+                    <small>
+                        AI FITNESS COACH
+                    </small>
+
+                    <p>
+                        ${safeHTML(chatReply(t))}
+                    </p>
+                </div>
+
+            </div>
+        `;
+
+
+        b.scrollTop = b.scrollHeight;
+
+    }, 350);
+}
+
+
+/* =========================================================
+   FIREBASE ADMIN STUDENTS
+========================================================= */
 
 let adminStudents = {};
-
 let adminPresence = {};
-
 let selectedStudentUID = null;
 
-let selectedStudentListener = null;
 
-let selectedPresenceListener = null;
+function initAdminFirebase() {
+
+    if (
+        typeof firebase === "undefined" ||
+        !firebase.database
+    ) {
+
+        console.error(
+            "Firebase Database SDK is not loaded."
+        );
+
+        return;
+    }
 
 
-// ==========================================================
-// STUDENTS REALTIME
-// ==========================================================
+    const studentsRef =
+        firebase.database().ref("students");
 
-studentsRef.on(
-    "value",
-    function(snapshot) {
 
-        adminStudents =
-            snapshot.val() || {};
+    const presenceRef =
+        firebase.database().ref("presence");
 
-        updateAdminStats();
 
-        renderFirebaseStudents();
+    /* =====================================================
+       STUDENTS REALTIME
+    ===================================================== */
 
-        // If a student is already selected,
-        // refresh his details automatically.
-        if (selectedStudentUID) {
+    studentsRef.on(
+        "value",
 
-            const student =
-                adminStudents[selectedStudentUID];
+        function(snapshot) {
 
-            if (student) {
+            adminStudents =
+                snapshot.val() || {};
 
-                renderStudentDetails(
-                    selectedStudentUID,
-                    student
-                );
 
+            updateAdminStats();
+
+            renderFirebaseStudents();
+
+
+            if (selectedStudentUID) {
+
+                const student =
+                    adminStudents[
+                        selectedStudentUID
+                    ];
+
+
+                if (student) {
+
+                    renderStudentDetails(
+                        selectedStudentUID,
+                        student
+                    );
+                }
             }
 
-        }
+        },
 
-    },
+        function(error) {
 
-    function(error) {
-
-        console.error(
-            "Students Firebase Error:",
-            error
-        );
-
-        const badge =
-            document.getElementById(
-                "syncBadge"
+            console.error(
+                "Students Firebase Error:",
+                error
             );
 
-        if (badge) {
 
-            badge.innerHTML =
-                "❌ Firebase Error";
+            const badge =
+                document.getElementById(
+                    "syncBadge"
+                );
 
+
+            if (badge) {
+
+                badge.textContent =
+                    "❌ Firebase Error";
+            }
         }
-
-    }
-);
+    );
 
 
-// ==========================================================
-// PRESENCE REALTIME
-// ==========================================================
+    /* =====================================================
+       PRESENCE REALTIME
+    ===================================================== */
 
-presenceRef.on(
-    "value",
-    function(snapshot) {
+    presenceRef.on(
+        "value",
 
-        adminPresence =
-            snapshot.val() || {};
+        function(snapshot) {
 
-        updateAdminStats();
-
-        renderFirebaseStudents();
+            adminPresence =
+                snapshot.val() || {};
 
 
-        if (selectedStudentUID) {
+            updateAdminStats();
 
-            updateSelectedStudentPresence(
-                selectedStudentUID
+            renderFirebaseStudents();
+
+
+            if (selectedStudentUID) {
+
+                updateSelectedStudentPresence(
+                    selectedStudentUID
+                );
+            }
+
+        },
+
+        function(error) {
+
+            console.error(
+                "Presence Firebase Error:",
+                error
             );
-
         }
-
-    },
-
-    function(error) {
-
-        console.error(
-            "Presence Error:",
-            error
-        );
-
-    }
-);
+    );
+}
 
 
-// ==========================================================
-// ADMIN STATS
-// ==========================================================
+/* =========================================================
+   ADMIN STATS
+========================================================= */
 
 function updateAdminStats() {
 
-
     const students =
-        Object.keys(
-            adminStudents
-        );
+        Object.keys(adminStudents);
 
-
-    // TOTAL STUDENTS
 
     const total =
         students.length;
@@ -162,33 +664,22 @@ function updateAdminStats() {
 
 
     if (totalElement) {
-
-        totalElement.textContent =
-            total;
-
+        totalElement.textContent = total;
     }
 
-
-
-    // ACTIVE / ONLINE STUDENTS
 
     let active = 0;
 
 
-    students.forEach(
-        function(uid) {
+    students.forEach(uid => {
 
-            if (
-                adminPresence[uid] &&
-                adminPresence[uid].online === true
-            ) {
-
-                active++;
-
-            }
-
+        if (
+            adminPresence[uid] &&
+            adminPresence[uid].online === true
+        ) {
+            active++;
         }
-    );
+    });
 
 
     const activeElement =
@@ -198,38 +689,27 @@ function updateAdminStats() {
 
 
     if (activeElement) {
-
-        activeElement.textContent =
-            active;
-
+        activeElement.textContent = active;
     }
 
-
-
-    // ACTIVE PLANS
 
     let plans = 0;
 
 
-    students.forEach(
-        function(uid) {
+    students.forEach(uid => {
 
-            const student =
-                adminStudents[uid];
+        const student =
+            adminStudents[uid];
 
 
-            if (
-                student &&
-                student.goal &&
-                String(student.goal).trim() !== ""
-            ) {
-
-                plans++;
-
-            }
-
+        if (
+            student &&
+            student.goal &&
+            String(student.goal).trim() !== ""
+        ) {
+            plans++;
         }
-    );
+    });
 
 
     const plansElement =
@@ -239,15 +719,9 @@ function updateAdminStats() {
 
 
     if (plansElement) {
-
-        plansElement.textContent =
-            plans;
-
+        plansElement.textContent = plans;
     }
 
-
-
-    // SYNCED STUDENTS
 
     const syncElement =
         document.getElementById(
@@ -256,15 +730,9 @@ function updateAdminStats() {
 
 
     if (syncElement) {
-
-        syncElement.textContent =
-            total;
-
+        syncElement.textContent = total;
     }
 
-
-
-    // SYNC BADGE
 
     const badge =
         document.getElementById(
@@ -274,22 +742,17 @@ function updateAdminStats() {
 
     if (badge) {
 
-        badge.innerHTML = `
-            <span class="live-sync-dot"></span>
-            Live — Firebase synced
-        `;
-
+        badge.innerHTML =
+            '<span class="live-sync-dot"></span> Live — Firebase synced';
     }
-
 }
 
 
-// ==========================================================
-// RENDER STUDENT LIST
-// ==========================================================
+/* =========================================================
+   RENDER FIREBASE STUDENTS
+========================================================= */
 
 function renderFirebaseStudents() {
-
 
     const table =
         document.getElementById(
@@ -301,15 +764,12 @@ function renderFirebaseStudents() {
 
 
     const studentEntries =
-        Object.entries(
-            adminStudents
-        );
+        Object.entries(adminStudents);
 
 
     if (studentEntries.length === 0) {
 
         table.innerHTML = `
-
             <tr>
 
                 <td
@@ -329,17 +789,11 @@ function renderFirebaseStudents() {
                 </td>
 
             </tr>
-
         `;
 
         return;
-
     }
 
-
-    // ======================================================
-    // SORT NEWEST FIRST
-    // ======================================================
 
     studentEntries.sort(
         function(a, b) {
@@ -355,219 +809,198 @@ function renderFirebaseStudents() {
                 (studentB.createdAt || 0) -
                 (studentA.createdAt || 0)
             );
-
         }
     );
 
 
-
-    // ======================================================
-    // BUILD TABLE
-    // ======================================================
-
     table.innerHTML =
-        studentEntries
-            .map(
-                function(entry) {
+        studentEntries.map(
+            function(entry) {
 
-                    const uid =
-                        entry[0];
-
-                    const student =
-                        entry[1] || {};
+                const uid =
+                    entry[0];
 
 
-                    const name =
-                        student.name ||
-                        (
-                            student.email
-                                ? student.email
-                                    .split("@")[0]
-                                : "Student"
-                        );
+                const student =
+                    entry[1] || {};
 
 
-                    const email =
-                        student.email || "";
+                const name =
+                    student.name ||
+                    (
+                        student.email
+                            ? student.email.split("@")[0]
+                            : "Student"
+                    );
 
 
-                    const photo =
-                        student.profilePic ||
-                        "default-avatar.png";
+                const email =
+                    student.email || "";
 
 
-                    const goal =
-                        student.goal ||
-                        "General Fitness";
+                const photo =
+                    student.profilePic ||
+                    "default-avatar.png";
 
 
-                    const bmi =
-                        student.bmi ??
-                        "--";
+                const goal =
+                    student.goal ||
+                    "General Fitness";
 
 
-                    const calories =
-                        student.calories ??
-                        "--";
+                const score =
+                    student.score ?? 0;
 
 
-                    const score =
-                        student.score ??
-                        0;
+                const online =
+                    adminPresence[uid] &&
+                    adminPresence[uid].online === true;
 
 
-                    const online =
-                        adminPresence[uid] &&
-                        adminPresence[uid].online === true;
+                return `
+                    <tr class="student-row">
 
+                        <td>
 
-                    return `
+                            <div
+                                style="
+                                    display:flex;
+                                    align-items:center;
+                                    gap:12px;
+                                "
+                            >
 
-                        <tr
-                            class="student-row"
-                        >
-
-                            <!-- USER -->
-
-                            <td>
-
-                                <div
+                                <img
+                                    src="${safeHTML(photo)}"
                                     style="
-                                        display:flex;
-                                        align-items:center;
-                                        gap:12px;
+                                        width:44px;
+                                        height:44px;
+                                        border-radius:50%;
+                                        object-fit:cover;
                                     "
+                                    onerror="
+                                        this.src='default-avatar.png'
+                                    "
+                                    alt="Student"
                                 >
 
-                                    <img
-                                        src="${safeHTML(photo)}"
+                                <div>
+
+                                    <b>
+                                        ${safeHTML(name)}
+                                    </b>
+
+                                    <small
                                         style="
-                                            width:44px;
-                                            height:44px;
-                                            border-radius:50%;
-                                            object-fit:cover;
+                                            display:block;
+                                            opacity:.6;
                                         "
-                                        onerror="
-                                            this.src='default-avatar.png'
-                                        "
-                                        alt="Student"
                                     >
-
-                                    <div>
-
-                                        <b>
-                                            ${safeHTML(name)}
-                                        </b>
-
-                                        <small
-                                            style="
-                                                display:block;
-                                                opacity:.6;
-                                            "
-                                        >
-                                            ${safeHTML(email)}
-                                        </small>
-
-                                    </div>
+                                        ${safeHTML(email)}
+                                    </small>
 
                                 </div>
 
-                            </td>
+                            </div>
+
+                        </td>
 
 
-                            <!-- GOAL -->
-
-                            <td>
-                                ${safeHTML(goal)}
-                            </td>
+                        <td>
+                            ${safeHTML(goal)}
+                        </td>
 
 
-                            <!-- BMI -->
-
-                            <td>
-                                ${safeHTML(bmi)}
-                            </td>
+                        <td>
+                            ${student.bmi ?? "--"}
+                        </td>
 
 
-                            <!-- CALORIES -->
-
-                            <td>
-                                ${safeHTML(calories)}
-                            </td>
+                        <td>
+                            ${student.calories ?? "--"}
+                        </td>
 
 
-                            <!-- SCORE -->
-
-                            <td>
-
-                                <b>
-                                    ${safeHTML(score)}
-                                </b>
-
-                            </td>
+                        <td>
+                            <b>
+                                ${safeHTML(score)}
+                            </b>
+                        </td>
 
 
-                            <!-- STATUS -->
+                        <td>
 
-                            <td>
+                            <span class="badge-status">
 
-                                <span
-                                    class="badge-status"
-                                >
+                                ${
+                                    online
+                                        ? "🟢 Online"
+                                        : "⚪ Offline"
+                                }
 
-                                    ${
-                                        online
-                                            ? "🟢 Online"
-                                            : "⚪ Offline"
-                                    }
+                            </span>
 
-                                </span>
-
-                            </td>
+                        </td>
 
 
-                            <!-- ACTION -->
+                        <td>
 
-                            <td>
+                            <button
+                                type="button"
+                                class="view-student-btn"
+                                data-uid="${safeHTML(uid)}"
+                            >
 
-                                <button
-                                    type="button"
-                                    class="view-student-btn"
-                                    onclick="
-                                        openStudentDetails('${uid}')
-                                    "
-                                >
+                                <i class="bi bi-person-vcard"></i>
 
-                                    <i
-                                        class="bi bi-person-vcard"
-                                    ></i>
+                                View Student
 
-                                    View Student
+                            </button>
 
-                                </button>
+                        </td>
 
-                            </td>
+                    </tr>
+                `;
+            }
+        ).join("");
 
-                        </tr>
 
-                    `;
+    /* =====================================================
+       IMPORTANT:
+       NO INLINE onclick
+    ===================================================== */
 
+    table
+        .querySelectorAll(".view-student-btn")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    const uid =
+                        this.dataset.uid;
+
+                    openStudentDetails(uid);
                 }
-            )
-            .join("");
-
+            );
+        });
 }
 
 
-// ==========================================================
-// OPEN SPECIFIC STUDENT
-// ==========================================================
+/* =========================================================
+   OPEN STUDENT DETAILS
+========================================================= */
 
 function openStudentDetails(uid) {
 
+    console.log(
+        "Opening student:",
+        uid
+    );
 
-    selectedStudentUID =
-        uid;
+
+    selectedStudentUID = uid;
 
 
     const student =
@@ -581,12 +1014,27 @@ function openStudentDetails(uid) {
             uid
         );
 
-        return;
 
+        if (typeof Swal !== "undefined") {
+
+            Swal.fire({
+                icon: "error",
+                title: "Student Not Found",
+                text: "This student's data could not be found in Firebase."
+            });
+
+        } 
+        else {
+
+            alert(
+                "Student data not found."
+            );
+        }
+
+
+        return;
     }
 
-
-    // Show section
 
     const section =
         document.getElementById(
@@ -594,15 +1042,25 @@ function openStudentDetails(uid) {
         );
 
 
-    if (section) {
+    if (!section) {
 
-        section.style.display =
-            "block";
+        console.error(
+            "studentDetailsSection not found in HTML."
+        );
 
+
+        alert(
+            "studentDetailsSection admin.html mein nahi mila."
+        );
+
+
+        return;
     }
 
 
-    // Render current data
+    section.style.display =
+        "block";
+
 
     renderStudentDetails(
         uid,
@@ -610,39 +1068,25 @@ function openStudentDetails(uid) {
     );
 
 
-    // Scroll to section
+    setTimeout(() => {
 
-    setTimeout(
-        function() {
+        section.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
 
-            if (section) {
-
-                section.scrollIntoView({
-
-                    behavior: "smooth",
-
-                    block: "start"
-
-                });
-
-            }
-
-        },
-        100
-    );
-
+    }, 100);
 }
 
 
-// ==========================================================
-// RENDER SPECIFIC STUDENT DETAILS
-// ==========================================================
+/* =========================================================
+   RENDER STUDENT DETAILS
+========================================================= */
 
 function renderStudentDetails(
     uid,
     student
 ) {
-
 
     if (!student) return;
 
@@ -651,13 +1095,10 @@ function renderStudentDetails(
         student.name ||
         (
             student.email
-                ? student.email
-                    .split("@")[0]
+                ? student.email.split("@")[0]
                 : "Student"
         );
 
-
-    // PROFILE
 
     setText(
         "detailName",
@@ -682,12 +1123,8 @@ function renderStudentDetails(
         profile.src =
             student.profilePic ||
             "default-avatar.png";
-
     }
 
-
-
-    // GOAL
 
     setText(
         "detailGoal",
@@ -696,17 +1133,11 @@ function renderStudentDetails(
     );
 
 
-
-    // BMI
-
     setText(
         "detailBMI",
         student.bmi ?? "--"
     );
 
-
-
-    // WEIGHT
 
     setText(
         "detailWeight",
@@ -716,9 +1147,6 @@ function renderStudentDetails(
     );
 
 
-
-    // HEIGHT
-
     setText(
         "detailHeight",
         student.height
@@ -727,17 +1155,11 @@ function renderStudentDetails(
     );
 
 
-
-    // CALORIES
-
     setText(
         "detailCalories",
         student.calories ?? "--"
     );
 
-
-
-    // SCORE
 
     setText(
         "detailScore",
@@ -745,102 +1167,56 @@ function renderStudentDetails(
     );
 
 
-
-    // ACCOUNT STATUS
-
     setText(
         "detailAccountStatus",
-        student.status ||
-        "Active"
+        student.status || "Active"
     );
 
-
-
-    // PROVIDER
 
     setText(
         "detailProvider",
-        student.provider ||
-        "email"
+        student.provider || "email"
     );
 
-
-
-    // MEALS
 
     setText(
         "detailMeals",
-        formatStudentData(
-            student.meals
-        )
+        formatStudentData(student.meals)
     );
 
-
-
-    // WORKOUTS
 
     setText(
         "detailWorkouts",
-        formatStudentData(
-            student.workouts
-        )
+        formatStudentData(student.workouts)
     );
 
-
-
-    // HABITS
 
     setText(
         "detailHabits",
-        formatStudentData(
-            student.habits
-        )
+        formatStudentData(student.habits)
     );
 
-
-
-    // HOBBIES
 
     setText(
         "detailHobbies",
-        formatStudentData(
-            student.hobbies
-        )
+        formatStudentData(student.hobbies)
     );
 
-
-
-    // WATER
 
     setText(
         "detailWater",
-        formatStudentData(
-            student.water
-        )
+        formatStudentData(student.water)
     );
 
-
-
-    // SLEEP
 
     setText(
         "detailSleep",
-        formatStudentData(
-            student.sleep
-        )
+        formatStudentData(student.sleep)
     );
 
 
+    updateSelectedStudentPresence(uid);
 
-    // ONLINE STATUS
-
-    updateSelectedStudentPresence(
-        uid
-    );
-
-
-
-    // LAST UPDATE
 
     const sync =
         document.getElementById(
@@ -851,23 +1227,16 @@ function renderStudentDetails(
     if (sync) {
 
         sync.innerHTML =
-            "🟢 Live Firebase — " +
-            "Automatically updating";
-
+            "🟢 Live Firebase — Automatically updating";
     }
-
 }
 
 
-// ==========================================================
-// UPDATE SELECTED STUDENT ONLINE STATUS
-// ==========================================================
+/* =========================================================
+   STUDENT PRESENCE
+========================================================= */
 
 function updateSelectedStudentPresence(uid) {
-
-
-    if (!selectedStudentUID) return;
-
 
     const presence =
         adminPresence[uid] || {};
@@ -901,7 +1270,8 @@ function updateSelectedStudentPresence(uid) {
             "online"
         );
 
-    } else {
+    } 
+    else {
 
         status.textContent =
             "Offline";
@@ -909,15 +1279,13 @@ function updateSelectedStudentPresence(uid) {
         dot.classList.remove(
             "online"
         );
-
     }
-
 }
 
 
-// ==========================================================
-// CLOSE STUDENT SECTION
-// ==========================================================
+/* =========================================================
+   CLOSE STUDENT DETAILS
+========================================================= */
 
 const closeStudentDetails =
     document.getElementById(
@@ -941,22 +1309,18 @@ if (closeStudentDetails) {
 
                 section.style.display =
                     "none";
-
             }
 
 
-            selectedStudentUID =
-                null;
-
+            selectedStudentUID = null;
         }
     );
-
 }
 
 
-// ==========================================================
-// SET TEXT SAFELY
-// ==========================================================
+/* =========================================================
+   SAFE TEXT
+========================================================= */
 
 function setText(id, value) {
 
@@ -968,18 +1332,15 @@ function setText(id, value) {
 
         element.textContent =
             value ?? "--";
-
     }
-
 }
 
 
-// ==========================================================
-// FORMAT ARRAYS / OBJECTS
-// ==========================================================
+/* =========================================================
+   FORMAT STUDENT DATA
+========================================================= */
 
 function formatStudentData(value) {
-
 
     if (
         value === undefined ||
@@ -988,14 +1349,12 @@ function formatStudentData(value) {
     ) {
 
         return "--";
-
     }
 
 
     if (Array.isArray(value)) {
 
         return value.join(", ");
-
     }
 
 
@@ -1003,18 +1362,16 @@ function formatStudentData(value) {
 
         return Object.values(value)
             .join(", ");
-
     }
 
 
     return String(value);
-
 }
 
 
-// ==========================================================
-// BASIC HTML ESCAPE
-// ==========================================================
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
 
 function safeHTML(value) {
 
@@ -1024,10 +1381,183 @@ function safeHTML(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
 }
 
-} 
+
+/* =========================================================
+   MAKE FUNCTIONS GLOBAL
+========================================================= */
+
+window.openStudentDetails =
+    openStudentDetails;
+
+window.toggleWorkout =
+    toggleWorkout;
+
+window.toggleMeal =
+    toggleMeal;
+
+window.toggleHabit =
+    toggleHabit;
+
+window.calcBMI =
+    calcBMI;
+
+window.calcCalories =
+    calcCalories;
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        initAdminFirebase();
+
+        renderWorkouts();
+        renderMeals();
+        renderHabits();
+
+
+        const bmiBtn =
+            document.getElementById(
+                "bmiBtn"
+            );
+
+        if (bmiBtn) {
+            bmiBtn.addEventListener(
+                "click",
+                calcBMI
+            );
+        }
+
+
+        const calorieBtn =
+            document.getElementById(
+                "calorieBtn"
+            );
+
+        if (calorieBtn) {
+            calorieBtn.addEventListener(
+                "click",
+                calcCalories
+            );
+        }
+
+
+        const themeToggle =
+            document.getElementById(
+                "themeToggle"
+            );
+
+        if (themeToggle) {
+
+            themeToggle.addEventListener(
+                "click",
+                toggleTheme
+            );
+
+            updateThemeToggle();
+        }
+
+
+        const sendChatButton =
+            document.getElementById(
+                "sendChat"
+            );
+
+
+        if (sendChatButton) {
+
+            sendChatButton.addEventListener(
+                "click",
+                function() {
+
+                    const input =
+                        document.getElementById(
+                            "chatInput"
+                        );
+
+
+                    if (!input) return;
+
+
+                    sendChat(
+                        input.value
+                    );
+
+
+                    input.value = "";
+                }
+            );
+        }
+
+
+        const chatInput =
+            document.getElementById(
+                "chatInput"
+            );
+
+
+        if (chatInput) {
+
+            chatInput.addEventListener(
+                "keydown",
+                function(e) {
+
+                    if (e.key === "Enter") {
+
+                        const send =
+                            document.getElementById(
+                                "sendChat"
+                            );
+
+                        if (send) {
+                            send.click();
+                        }
+                    }
+                }
+            );
+        }
+
+
+        const logout =
+            document.getElementById(
+                "logoutBtn"
+            );
+
+
+        if (logout) {
+
+            logout.addEventListener(
+                "click",
+                function() {
+
+                    localStorage.removeItem(
+                        "fitnessLoggedIn"
+                    );
+
+                    localStorage.removeItem(
+                        "fitnessUserRole"
+                    );
+
+                    localStorage.removeItem(
+                        "fitnessUserEmail"
+                    );
+
+                    location.href =
+                        "login.html";
+                }
+            );
+        }
+
+    }
+);
+
+}
 document.querySelectorAll(".nav-item").forEach(a=>{if(location.pathname.endsWith(a.getAttribute("href")))a.classList.add("active")});
 const logout=document.getElementById("logoutBtn");if(logout)logout.onclick=()=>{localStorage.removeItem("fitnessLoggedIn");localStorage.removeItem("fitnessUserRole");localStorage.removeItem("fitnessUserEmail");location.href="login.html"};
 const themeToggle=document.getElementById("themeToggle");if(themeToggle){themeToggle.addEventListener("click",toggleTheme);updateThemeToggle();}
@@ -1105,3 +1635,9 @@ firebase.auth().onAuthStateChanged(
 
     }
 );
+renderWorkouts();
+renderMeals();
+renderHabits();
+renderUsers();
+
+window.openStudentDetails = openStudentDetails;
