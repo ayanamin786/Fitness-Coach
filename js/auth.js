@@ -31,6 +31,8 @@ async function saveStudentProfile(user, extraData = {}) {
     });
 }
 
+localStorage.setItem("username", studentData.name);
+
 // ===============================
 // EMAIL + PASSWORD SIGNUP
 // ===============================
@@ -94,9 +96,9 @@ if (signup) {
                 title: "Success",
                 text: "Account created! Verification email sent.",
                 icon: "success"
-            }).then(function () {
+            }).then(() => {
 
-                window.location.replace("login.html");
+                window.location.replace("dashboard.html");
 
             });
 
@@ -156,16 +158,16 @@ if (continuewithgoogle) {
                 // SAVE GOOGLE USER TO DATABASE
                 // ===============================
 
-                // await saveStudentProfile(user, {
-                //     name: user.displayName || "",
-                //     provider: "google",
-                //     active: true
-                // });
+                await saveStudentProfile(user, {
+                    name: user.displayName || "",
+                    provider: "google",
+                    active: true
+                });
 
 
-                // console.log(
-                //     "Google user saved to database!"
-                // );
+                console.log(
+                    "Google user saved to database!"
+                );
 
 
                 // ===============================

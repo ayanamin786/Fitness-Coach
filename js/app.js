@@ -24,3 +24,100 @@ const themeToggle=document.getElementById("themeToggle");if(themeToggle){themeTo
 document.getElementById("bmiBtn")?.addEventListener("click",calcBMI);document.getElementById("calorieBtn")?.addEventListener("click",calcCalories);
 document.getElementById("sendChat")?.addEventListener("click",()=>{let i=document.getElementById("chatInput");if(!i)return;sendChat(i.value);i.value=""});document.getElementById("chatInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("sendChat").click()});document.querySelectorAll(".suggestions button").forEach(b=>b.onclick=()=>sendChat(b.dataset.q));
 renderWorkouts();renderMeals();renderHabits();renderUsers();
+
+// ==========================================
+// PERMANENT USER NAME
+// ==========================================
+
+function saveSideName(name) {
+
+    name = (name || "").trim();
+
+    if (!name) return;
+
+    // Save name permanently in browser
+    S.set("sideName", name);
+
+    // Show name in sidebar
+    var sideName = document.getElementById("sideName");
+
+    if (sideName) {
+        sideName.textContent = name;
+    }
+}
+
+
+// ==========================================
+// GET USER NAME
+// ==========================================
+
+function loadSideName() {
+
+    var savedName = S.get("sideName", "");
+
+    var sideName =
+        document.getElementById("sideName");
+
+
+    if (!sideName) return;
+
+
+    // If name already saved
+    if (savedName) {
+
+        sideName.textContent = savedName;
+
+        return;
+    }
+
+
+    // Try Firebase current user
+    if (
+        typeof firebase !== "undefined" &&
+        firebase.auth
+    ) {
+
+        firebase.auth().onAuthStateChanged(
+            function(user) {
+
+                if (!user) return;
+
+
+                var emailName =
+                    user.email
+                        ? user.email
+                            .split("@")[0]
+                        : "User";
+
+
+                var finalName =
+                    user.displayName ||
+                    emailName ||
+                    "User";
+
+
+                saveSideName(finalName);
+
+            }
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// LOAD NAME WHEN PAGE OPENS
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadSideName();
+
+    }
+);
+
+
+
