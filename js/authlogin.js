@@ -2,6 +2,22 @@
 var login = document.getElementById("loginBtn");
 var email = document.getElementById("loginEmail");
 var pass = document.getElementById("loginPassword");
+async function saveStudentProfile(user, extraData = {}) {
+    const studentData = {
+        uid: user.uid,
+        name: extraData.name || user.displayName || (user.email ? user.email.split("@")[0] : "New Student"),
+        email: user.email || "",
+        pass:user.password || "", // Do not store password in plaintext
+        goal: extraData.goal || "General Fitness",
+        score: extraData.score || 0,
+        status: extraData.status || "Active",
+        active: extraData.active !== false,
+        provider: extraData.provider || "email",
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        updatedAt: firebase.database.ServerValue.TIMESTAMP,
+        lastSeenAt: firebase.database.ServerValue.TIMESTAMP
+    };
+}
 
 // Save login session
 function saveSession(role, userEmail) {

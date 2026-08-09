@@ -126,10 +126,6 @@ if (signup) {
 // CONTINUE WITH GOOGLE
 // ===============================
 
-// ==========================================
-// GOOGLE LOGIN
-// ==========================================
-
 var continuewithgoogle =
     document.getElementById("continuewithgoogle");
 
@@ -142,59 +138,53 @@ if (continuewithgoogle) {
 
             try {
 
-                // Google Provider
                 var provider =
                     new firebase.auth.GoogleAuthProvider();
 
 
-                // Google Login
+                // Google login
                 var result =
-                    await firebase
-                        .auth()
+                    await firebase.auth()
                         .signInWithPopup(provider);
 
 
-                // Logged-in Google user
                 var user = result.user;
 
 
-                console.log(
-                    "Google Login Successful:",
-                    user
-                );
+                console.log("Google User:", user);
 
 
-                // Save user information
-                await saveStudentProfile(
-                    user,
-                    {
-                        name:
-                            user.displayName || "",
+                // ===============================
+                // SAVE GOOGLE USER TO DATABASE
+                // ===============================
 
-                        profilePic:
-                            user.photoURL || "",
-
-                        provider:
-                            "google",
-
-                        active:
-                            true
-                    }
-                );
+                await saveStudentProfile(user, {
+                    name: user.displayName || "",
+                    provider: "google",
+                    active: true
+                });
 
 
                 console.log(
-                    "User data saved successfully!"
+                    "Google user saved to database!"
                 );
 
 
-                // ==========================================
-                // DIRECTLY OPEN WEBSITE
-                // ==========================================
+                // ===============================
+                // SUCCESS
+                // ===============================
 
-                window.location.replace(
-                    "./dashboard.html"
-                );
+                Swal.fire({
+                    title: "Success",
+                    text: "Login Successful",
+                    icon: "success"
+                }).then(() => {
+
+                    window.location.replace(
+                        "dashboard.html"
+                    );
+
+                });
 
 
             } catch (error) {
@@ -210,8 +200,7 @@ if (continuewithgoogle) {
                     title: "Google Login Failed",
                     text: error.message,
                     footer:
-                        "Error Code: " +
-                        error.code
+                        "Error Code: " + error.code
                 });
 
             }
@@ -220,4 +209,3 @@ if (continuewithgoogle) {
     );
 
 }
-
