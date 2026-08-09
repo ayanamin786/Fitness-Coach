@@ -1,85 +1,59 @@
-
 var login = document.getElementById("loginBtn");
 var email = document.getElementById("loginEmail");
 var pass = document.getElementById("loginPassword");
-// async function saveStudentProfile(user, extraData = {}) {
-//     const studentData = {
-//         uid: user.uid,
-//         name: extraData.name || user.displayName || (user.email ? user.email.split("@")[0] : "New Student"),
-//         email: user.email || "",
-//         pass:user.password || "", // Do not store password in plaintext
-//         goal: extraData.goal || "General Fitness",
-//         score: extraData.score || 0,
-//         status: extraData.status || "Active",
-//         active: extraData.active !== false,
-//         provider: extraData.provider || "email",
-//         createdAt: firebase.database.ServerValue.TIMESTAMP,
-//         updatedAt: firebase.database.ServerValue.TIMESTAMP,
-//         lastSeenAt: firebase.database.ServerValue.TIMESTAMP
-//     };
-// }
 
-// Save login session
+
+// ==========================================
+// SAVE LOGIN SESSION
+// ==========================================
+
 function saveSession(role, userEmail) {
-    localStorage.setItem("fitnessLoggedIn", "true");
-    localStorage.setItem("fitnessUserRole", role);
-    localStorage.setItem("fitnessUserEmail", userEmail);
+
+    localStorage.setItem(
+        "fitnessLoggedIn",
+        "true"
+    );
+
+    localStorage.setItem(
+        "fitnessUserRole",
+        role
+    );
+
+    localStorage.setItem(
+        "fitnessUserEmail",
+        userEmail
+    );
 }
 
 
-// Login button
+// ==========================================
+// NORMAL EMAIL/PASSWORD LOGIN
+// ==========================================
+
 if (login) {
 
-    login.addEventListener("click", async function () {
+    login.addEventListener(
+        "click",
+        async function () {
 
-        var emailValue = (email?.value || "").trim();
-        var passwordValue = pass?.value || "";
+            var emailValue =
+                (email?.value || "").trim();
 
-
-        // Check empty fields
-        if (!emailValue || !passwordValue) {
-
-            Swal.fire({
-                icon: "warning",
-                title: "Missing Information",
-                text: "Please enter your email and password."
-            });
-
-            return;
-        }
-
-
-        // Firebase Login
-        try {
-
-            var userCred =
-                await firebase.auth().signInWithEmailAndPassword(
-                    emailValue,
-                    passwordValue
-                );
-
-            var user = userCred.user;
-
-            console.log("Logged in UID:", user.uid);
-            console.log("Logged in Email:", user.email);
+            var passwordValue =
+                pass?.value || "";
 
 
             // ==========================================
-            // ADMIN LOGIN
+            // CHECK EMPTY FIELDS
             // ==========================================
 
-            if (user.email === "admin@example.com" && pass.value === "admin") {
-
-                saveSession("admin", user.email);
+            if (!emailValue || !passwordValue) {
 
                 Swal.fire({
-                    title: "Success",
-                    text: "Admin login successful",
-                    icon: "success"
-                }).then(function () {
-
-                    window.location.replace("admin.html");
-
+                    icon: "warning",
+                    title: "Missing Information",
+                    text:
+                        "Please enter your email and password."
                 });
 
                 return;
@@ -87,36 +61,134 @@ if (login) {
 
 
             // ==========================================
-            // STUDENT LOGIN
+            // FIREBASE LOGIN
             // ==========================================
 
-            saveSession("student", user.email);
+            try {
 
-            Swal.fire({
-                title: "Success",
-                text: "Login Successful",
-                icon: "success"
-            }).then(function () {
-
-                window.location.replace("dashboard.html");
-
-            });
+                var userCred =
+                    await firebase
+                        .auth()
+                        .signInWithEmailAndPassword(
+                            emailValue,
+                            passwordValue
+                        );
 
 
-        } catch (err) {
+                var user =
+                    userCred.user;
 
-            console.error("Firebase Login Error:", err);
 
-            Swal.fire({
-                icon: "error",
-                title: "Login Failed",
-                text: "Email or password is incorrect.",
-                footer: err?.message || ""
-            });
+                console.log(
+                    "Logged in UID:",
+                    user.uid
+                );
+
+                console.log(
+                    "Logged in Email:",
+                    user.email
+                );
+
+
+                // ==========================================
+                // ADMIN LOGIN
+                // ==========================================
+
+                if (
+                    user.email ===
+                    "admin@example.com" &&
+                    passwordValue ===
+                    "admin"
+                ) {
+
+                    saveSession(
+                        "admin",
+                        user.email
+                    );
+
+
+                    Swal.fire({
+
+                        title:
+                            "Success",
+
+                        text:
+                            "Admin login successful",
+
+                        icon:
+                            "success"
+
+                    }).then(function () {
+
+                        window.location.replace(
+                            "admin.html"
+                        );
+
+                    });
+
+
+                    return;
+                }
+
+
+                // ==========================================
+                // STUDENT LOGIN
+                // ==========================================
+
+                saveSession(
+                    "student",
+                    user.email
+                );
+
+
+                Swal.fire({
+
+                    title:
+                        "Success",
+
+                    text:
+                        "Login Successful",
+
+                    icon:
+                        "success"
+
+                }).then(function () {
+
+                    window.location.replace(
+                        "dashboard.html"
+                    );
+
+                });
+
+
+            } catch (err) {
+
+                console.error(
+                    "Firebase Login Error:",
+                    err
+                );
+
+
+                Swal.fire({
+
+                    icon:
+                        "error",
+
+                    title:
+                        "Login Failed",
+
+                    text:
+                        "Email or password is incorrect.",
+
+                    footer:
+                        err?.message || ""
+
+                });
+
+            }
 
         }
-
-    });
+    );
 
 }
 
@@ -125,13 +197,10 @@ if (login) {
 // GOOGLE LOGIN
 // ==========================================
 
-
-// ==========================================
-// GOOGLE LOGIN
-// ==========================================
-
 var continuewithgoogle =
-    document.getElementById("continuewithgoogle");
+    document.getElementById(
+        "continuewithgoogle"
+    );
 
 
 if (continuewithgoogle) {
@@ -143,7 +212,7 @@ if (continuewithgoogle) {
             try {
 
                 // ==========================================
-                // GOOGLE AUTH PROVIDER
+                // GOOGLE PROVIDER
                 // ==========================================
 
                 var provider =
@@ -157,27 +226,40 @@ if (continuewithgoogle) {
                 var result =
                     await firebase
                         .auth()
-                        .signInWithPopup(provider);
+                        .signInWithPopup(
+                            provider
+                        );
 
 
                 // ==========================================
-                // GET LOGGED-IN USER
+                // GET USER
                 // ==========================================
 
-                var user = result.user;
+                var user =
+                    result.user;
 
 
                 console.log(
                     "Google Login User:",
                     user
-                )
-                .then( () => {
+                );
 
-                    // ==========================================
-                    // GO TO DASHBOARD
-                    // ==========================================
 
-                    Swal.fire({
+                // ==========================================
+                // SAVE SESSION
+                // ==========================================
+
+                saveSession(
+                    "student",
+                    user.email
+                );
+
+
+                // ==========================================
+                // SUCCESS
+                // ==========================================
+
+                Swal.fire({
 
                     title:
                         "Login Successful!",
@@ -187,12 +269,17 @@ if (continuewithgoogle) {
                         (user.displayName || "User"),
 
                     icon:
-                        "success",
-                    })
+                        "success"
+
+                }).then(function () {
+
+                    // ==========================================
+                    // OPEN DASHBOARD
+                    // ==========================================
+
                     window.location.replace(
                         "dashboard.html"
                     );
-
 
                 });
 
@@ -223,6 +310,7 @@ if (continuewithgoogle) {
                     footer:
                         "Error Code: " +
                         error.code
+
                 });
 
             }
@@ -231,6 +319,4 @@ if (continuewithgoogle) {
     );
 
 }
-
-
 
