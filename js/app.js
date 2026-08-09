@@ -19,167 +19,58 @@ function sendChat(t){if(!t.trim())return;let b=document.getElementById("chatMess
 const users=[["Ayan","Muscle Gain",87,"Active"],["Ahmed","Weight Loss",81,"Active"],["Sara","Maintenance",76,"Active"],["Hamza","Muscle Gain",69,"Inactive"],["Maha","Weight Loss",91,"Active"]];
 function renderUsers(){
 
-// ==========================================================
-// FIREBASE REALTIME ADMIN DASHBOARD
+    // ==========================================================
+// ADMIN REALTIME SYSTEM
 // ==========================================================
 
-// Firebase database reference
-var studentsRef = firebase
-    .database()
-    .ref("students");
+const studentsRef =
+    firebase.database().ref("students");
+
+const presenceRef =
+    firebase.database().ref("presence");
+
+
+let adminStudents = {};
+
+let adminPresence = {};
+
+let selectedStudentUID = null;
+
+let selectedStudentListener = null;
+
+let selectedPresenceListener = null;
 
 
 // ==========================================================
-// REALTIME STUDENT DATA
+// STUDENTS REALTIME
 // ==========================================================
 
 studentsRef.on(
     "value",
     function(snapshot) {
 
-        console.log(
-            "Firebase students updated!"
-        );
-
-
-        // Get all students
-        var data =
+        adminStudents =
             snapshot.val() || {};
 
+        updateAdminStats();
 
-        // Convert Firebase object to array
-        var students =
-            Object.keys(data).map(function(uid) {
+        renderFirebaseStudents();
 
-                return {
-                    uid: uid,
-                    ...data[uid]
-                };
+        // If a student is already selected,
+        // refresh his details automatically.
+        if (selectedStudentUID) {
 
-            });
+            const student =
+                adminStudents[selectedStudentUID];
 
+            if (student) {
 
-        // ======================================================
-        // TOTAL STUDENTS
-        // ======================================================
-
-        var totalStudents =
-            students.length;
-
-
-        var totalUsers =
-            document.getElementById(
-                "totalUsers"
-            );
-
-
-        if (totalUsers) {
-
-            totalUsers.textContent =
-                totalStudents;
-
-        }
-
-
-        // ======================================================
-        // ACTIVE STUDENTS
-        // ======================================================
-
-        var activeStudents =
-            students.filter(function(student) {
-
-                return (
-                    student.active === true ||
-                    student.status === "Active"
+                renderStudentDetails(
+                    selectedStudentUID,
+                    student
                 );
 
-            });
-
-
-        var activeUsers =
-            document.getElementById(
-                "activeUsers"
-            );
-
-
-        if (activeUsers) {
-
-            activeUsers.textContent =
-                activeStudents.length;
-
-        }
-
-
-        // ======================================================
-        // PLANS / GOALS
-        // ======================================================
-
-        var plans =
-            students.filter(function(student) {
-
-                return (
-                    student.goal &&
-                    student.goal.trim() !== ""
-                );
-
-            });
-
-
-        var plansGenerated =
-            document.getElementById(
-                "plansGenerated"
-            );
-
-
-        if (plansGenerated) {
-
-            plansGenerated.textContent =
-                plans.length;
-
-        }
-
-
-        // ======================================================
-        // FIREBASE SYNC COUNT
-        // ======================================================
-
-        var aiConversations =
-            document.getElementById(
-                "aiConversations"
-            );
-
-
-        if (aiConversations) {
-
-            aiConversations.textContent =
-                students.length;
-
-        }
-
-
-        // ======================================================
-        // RENDER STUDENT TABLE
-        // ======================================================
-
-        renderRealtimeStudents(
-            students
-        );
-
-
-        // ======================================================
-        // SYNC STATUS
-        // ======================================================
-
-        var syncBadge =
-            document.getElementById(
-                "syncBadge"
-            );
-
-
-        if (syncBadge) {
-
-            syncBadge.textContent =
-                "● Live — Firebase synced";
+            }
 
         }
 
@@ -188,21 +79,19 @@ studentsRef.on(
     function(error) {
 
         console.error(
-            "Firebase Realtime Error:",
+            "Students Firebase Error:",
             error
         );
 
-
-        var syncBadge =
+        const badge =
             document.getElementById(
                 "syncBadge"
             );
 
+        if (badge) {
 
-        if (syncBadge) {
-
-            syncBadge.textContent =
-                "Firebase connection error";
+            badge.innerHTML =
+                "❌ Firebase Error";
 
         }
 
@@ -211,14 +100,198 @@ studentsRef.on(
 
 
 // ==========================================================
-// RENDER REALTIME STUDENT TABLE
+// PRESENCE REALTIME
 // ==========================================================
 
-function renderRealtimeStudents(
-    students
-) {
+presenceRef.on(
+    "value",
+    function(snapshot) {
 
-    var table =
+        adminPresence =
+            snapshot.val() || {};
+
+        updateAdminStats();
+
+        renderFirebaseStudents();
+
+
+        if (selectedStudentUID) {
+
+            updateSelectedStudentPresence(
+                selectedStudentUID
+            );
+
+        }
+
+    },
+
+    function(error) {
+
+        console.error(
+            "Presence Error:",
+            error
+        );
+
+    }
+);
+
+
+// ==========================================================
+// ADMIN STATS
+// ==========================================================
+
+function updateAdminStats() {
+
+
+    const students =
+        Object.keys(
+            adminStudents
+        );
+
+
+    // TOTAL STUDENTS
+
+    const total =
+        students.length;
+
+
+    const totalElement =
+        document.getElementById(
+            "totalUsers"
+        );
+
+
+    if (totalElement) {
+
+        totalElement.textContent =
+            total;
+
+    }
+
+
+
+    // ACTIVE / ONLINE STUDENTS
+
+    let active = 0;
+
+
+    students.forEach(
+        function(uid) {
+
+            if (
+                adminPresence[uid] &&
+                adminPresence[uid].online === true
+            ) {
+
+                active++;
+
+            }
+
+        }
+    );
+
+
+    const activeElement =
+        document.getElementById(
+            "activeUsers"
+        );
+
+
+    if (activeElement) {
+
+        activeElement.textContent =
+            active;
+
+    }
+
+
+
+    // ACTIVE PLANS
+
+    let plans = 0;
+
+
+    students.forEach(
+        function(uid) {
+
+            const student =
+                adminStudents[uid];
+
+
+            if (
+                student &&
+                student.goal &&
+                String(student.goal).trim() !== ""
+            ) {
+
+                plans++;
+
+            }
+
+        }
+    );
+
+
+    const plansElement =
+        document.getElementById(
+            "plansGenerated"
+        );
+
+
+    if (plansElement) {
+
+        plansElement.textContent =
+            plans;
+
+    }
+
+
+
+    // SYNCED STUDENTS
+
+    const syncElement =
+        document.getElementById(
+            "aiConversations"
+        );
+
+
+    if (syncElement) {
+
+        syncElement.textContent =
+            total;
+
+    }
+
+
+
+    // SYNC BADGE
+
+    const badge =
+        document.getElementById(
+            "syncBadge"
+        );
+
+
+    if (badge) {
+
+        badge.innerHTML = `
+            <span class="live-sync-dot"></span>
+            Live — Firebase synced
+        `;
+
+    }
+
+}
+
+
+// ==========================================================
+// RENDER STUDENT LIST
+// ==========================================================
+
+function renderFirebaseStudents() {
+
+
+    const table =
         document.getElementById(
             "userTable"
         );
@@ -227,16 +300,36 @@ function renderRealtimeStudents(
     if (!table) return;
 
 
-    // No students
-    if (students.length === 0) {
+    const studentEntries =
+        Object.entries(
+            adminStudents
+        );
+
+
+    if (studentEntries.length === 0) {
 
         table.innerHTML = `
+
             <tr>
-                <td colspan="5"
-                    style="text-align:center;padding:30px;">
+
+                <td
+                    colspan="7"
+                    style="
+                        text-align:center;
+                        padding:40px;
+                    "
+                >
+
+                    <i class="bi bi-people"></i>
+
+                    <br><br>
+
                     No students registered yet.
+
                 </td>
+
             </tr>
+
         `;
 
         return;
@@ -244,154 +337,677 @@ function renderRealtimeStudents(
     }
 
 
-    // Sort newest students first
-    students.sort(function(a, b) {
+    // ======================================================
+    // SORT NEWEST FIRST
+    // ======================================================
 
-        return (
-            (b.createdAt || 0) -
-            (a.createdAt || 0)
+    studentEntries.sort(
+        function(a, b) {
+
+            const studentA =
+                a[1] || {};
+
+            const studentB =
+                b[1] || {};
+
+
+            return (
+                (studentB.createdAt || 0) -
+                (studentA.createdAt || 0)
+            );
+
+        }
+    );
+
+
+
+    // ======================================================
+    // BUILD TABLE
+    // ======================================================
+
+    table.innerHTML =
+        studentEntries
+            .map(
+                function(entry) {
+
+                    const uid =
+                        entry[0];
+
+                    const student =
+                        entry[1] || {};
+
+
+                    const name =
+                        student.name ||
+                        (
+                            student.email
+                                ? student.email
+                                    .split("@")[0]
+                                : "Student"
+                        );
+
+
+                    const email =
+                        student.email || "";
+
+
+                    const photo =
+                        student.profilePic ||
+                        "default-avatar.png";
+
+
+                    const goal =
+                        student.goal ||
+                        "General Fitness";
+
+
+                    const bmi =
+                        student.bmi ??
+                        "--";
+
+
+                    const calories =
+                        student.calories ??
+                        "--";
+
+
+                    const score =
+                        student.score ??
+                        0;
+
+
+                    const online =
+                        adminPresence[uid] &&
+                        adminPresence[uid].online === true;
+
+
+                    return `
+
+                        <tr
+                            class="student-row"
+                        >
+
+                            <!-- USER -->
+
+                            <td>
+
+                                <div
+                                    style="
+                                        display:flex;
+                                        align-items:center;
+                                        gap:12px;
+                                    "
+                                >
+
+                                    <img
+                                        src="${safeHTML(photo)}"
+                                        style="
+                                            width:44px;
+                                            height:44px;
+                                            border-radius:50%;
+                                            object-fit:cover;
+                                        "
+                                        onerror="
+                                            this.src='default-avatar.png'
+                                        "
+                                        alt="Student"
+                                    >
+
+                                    <div>
+
+                                        <b>
+                                            ${safeHTML(name)}
+                                        </b>
+
+                                        <small
+                                            style="
+                                                display:block;
+                                                opacity:.6;
+                                            "
+                                        >
+                                            ${safeHTML(email)}
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- GOAL -->
+
+                            <td>
+                                ${safeHTML(goal)}
+                            </td>
+
+
+                            <!-- BMI -->
+
+                            <td>
+                                ${safeHTML(bmi)}
+                            </td>
+
+
+                            <!-- CALORIES -->
+
+                            <td>
+                                ${safeHTML(calories)}
+                            </td>
+
+
+                            <!-- SCORE -->
+
+                            <td>
+
+                                <b>
+                                    ${safeHTML(score)}
+                                </b>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                <span
+                                    class="badge-status"
+                                >
+
+                                    ${
+                                        online
+                                            ? "🟢 Online"
+                                            : "⚪ Offline"
+                                    }
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <button
+                                    type="button"
+                                    class="view-student-btn"
+                                    onclick="
+                                        openStudentDetails('${uid}')
+                                    "
+                                >
+
+                                    <i
+                                        class="bi bi-person-vcard"
+                                    ></i>
+
+                                    View Student
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+// ==========================================================
+// OPEN SPECIFIC STUDENT
+// ==========================================================
+
+function openStudentDetails(uid) {
+
+
+    selectedStudentUID =
+        uid;
+
+
+    const student =
+        adminStudents[uid];
+
+
+    if (!student) {
+
+        console.error(
+            "Student not found:",
+            uid
         );
 
-    });
+        return;
+
+    }
 
 
-    // Create rows
-    table.innerHTML =
-        students.map(function(student) {
+    // Show section
+
+    const section =
+        document.getElementById(
+            "studentDetailsSection"
+        );
 
 
-            // Student name
-            var name =
-                student.name ||
-                (
-                    student.email
-                        ? student.email.split("@")[0]
-                        : "Unknown Student"
+    if (section) {
+
+        section.style.display =
+            "block";
+
+    }
+
+
+    // Render current data
+
+    renderStudentDetails(
+        uid,
+        student
+    );
+
+
+    // Scroll to section
+
+    setTimeout(
+        function() {
+
+            if (section) {
+
+                section.scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "start"
+
+                });
+
+            }
+
+        },
+        100
+    );
+
+}
+
+
+// ==========================================================
+// RENDER SPECIFIC STUDENT DETAILS
+// ==========================================================
+
+function renderStudentDetails(
+    uid,
+    student
+) {
+
+
+    if (!student) return;
+
+
+    const name =
+        student.name ||
+        (
+            student.email
+                ? student.email
+                    .split("@")[0]
+                : "Student"
+        );
+
+
+    // PROFILE
+
+    setText(
+        "detailName",
+        name
+    );
+
+
+    setText(
+        "detailEmail",
+        student.email || "--"
+    );
+
+
+    const profile =
+        document.getElementById(
+            "detailProfilePic"
+        );
+
+
+    if (profile) {
+
+        profile.src =
+            student.profilePic ||
+            "default-avatar.png";
+
+    }
+
+
+
+    // GOAL
+
+    setText(
+        "detailGoal",
+        student.goal ||
+        "General Fitness"
+    );
+
+
+
+    // BMI
+
+    setText(
+        "detailBMI",
+        student.bmi ?? "--"
+    );
+
+
+
+    // WEIGHT
+
+    setText(
+        "detailWeight",
+        student.weight
+            ? student.weight + " kg"
+            : "--"
+    );
+
+
+
+    // HEIGHT
+
+    setText(
+        "detailHeight",
+        student.height
+            ? student.height + " cm"
+            : "--"
+    );
+
+
+
+    // CALORIES
+
+    setText(
+        "detailCalories",
+        student.calories ?? "--"
+    );
+
+
+
+    // SCORE
+
+    setText(
+        "detailScore",
+        student.score ?? 0
+    );
+
+
+
+    // ACCOUNT STATUS
+
+    setText(
+        "detailAccountStatus",
+        student.status ||
+        "Active"
+    );
+
+
+
+    // PROVIDER
+
+    setText(
+        "detailProvider",
+        student.provider ||
+        "email"
+    );
+
+
+
+    // MEALS
+
+    setText(
+        "detailMeals",
+        formatStudentData(
+            student.meals
+        )
+    );
+
+
+
+    // WORKOUTS
+
+    setText(
+        "detailWorkouts",
+        formatStudentData(
+            student.workouts
+        )
+    );
+
+
+
+    // HABITS
+
+    setText(
+        "detailHabits",
+        formatStudentData(
+            student.habits
+        )
+    );
+
+
+
+    // HOBBIES
+
+    setText(
+        "detailHobbies",
+        formatStudentData(
+            student.hobbies
+        )
+    );
+
+
+
+    // WATER
+
+    setText(
+        "detailWater",
+        formatStudentData(
+            student.water
+        )
+    );
+
+
+
+    // SLEEP
+
+    setText(
+        "detailSleep",
+        formatStudentData(
+            student.sleep
+        )
+    );
+
+
+
+    // ONLINE STATUS
+
+    updateSelectedStudentPresence(
+        uid
+    );
+
+
+
+    // LAST UPDATE
+
+    const sync =
+        document.getElementById(
+            "studentDetailSync"
+        );
+
+
+    if (sync) {
+
+        sync.innerHTML =
+            "🟢 Live Firebase — " +
+            "Automatically updating";
+
+    }
+
+}
+
+
+// ==========================================================
+// UPDATE SELECTED STUDENT ONLINE STATUS
+// ==========================================================
+
+function updateSelectedStudentPresence(uid) {
+
+
+    if (!selectedStudentUID) return;
+
+
+    const presence =
+        adminPresence[uid] || {};
+
+
+    const online =
+        presence.online === true;
+
+
+    const status =
+        document.getElementById(
+            "detailOnlineStatus"
+        );
+
+
+    const dot =
+        document.getElementById(
+            "detailStatusDot"
+        );
+
+
+    if (!status || !dot) return;
+
+
+    if (online) {
+
+        status.textContent =
+            "Online now";
+
+        dot.classList.add(
+            "online"
+        );
+
+    } else {
+
+        status.textContent =
+            "Offline";
+
+        dot.classList.remove(
+            "online"
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// CLOSE STUDENT SECTION
+// ==========================================================
+
+const closeStudentDetails =
+    document.getElementById(
+        "closeStudentDetails"
+    );
+
+
+if (closeStudentDetails) {
+
+    closeStudentDetails.addEventListener(
+        "click",
+        function() {
+
+            const section =
+                document.getElementById(
+                    "studentDetailsSection"
                 );
 
 
-            // Student goal
-            var goal =
-                student.goal ||
-                "General Fitness";
+            if (section) {
+
+                section.style.display =
+                    "none";
+
+            }
 
 
-            // Score
-            var score =
-                student.score ?? 0;
+            selectedStudentUID =
+                null;
+
+        }
+    );
+
+}
 
 
-            // Status
-            var isActive =
-                student.active === true ||
-                student.status === "Active";
+// ==========================================================
+// SET TEXT SAFELY
+// ==========================================================
+
+function setText(id, value) {
+
+    const element =
+        document.getElementById(id);
 
 
-            var status =
-                isActive
-                    ? "Active"
-                    : "Inactive";
+    if (element) {
+
+        element.textContent =
+            value ?? "--";
+
+    }
+
+}
 
 
-            return `
+// ==========================================================
+// FORMAT ARRAYS / OBJECTS
+// ==========================================================
 
-                <tr>
-
-                    <!-- USER -->
-
-                    <td>
-
-                        <div style="
-                            display:flex;
-                            align-items:center;
-                            gap:10px;
-                        ">
-
-                            <img
-                                src="${
-                                    student.profilePic ||
-                                    "default-avatar.png"
-                                }"
-                                alt="Profile"
-                                style="
-                                    width:38px;
-                                    height:38px;
-                                    border-radius:50%;
-                                    object-fit:cover;
-                                "
-                                onerror="
-                                    this.src='default-avatar.png'
-                                "
-                            >
-
-                            <div>
-
-                                <b>
-                                    ${escapeHTML(name)}
-                                </b>
-
-                                <small style="
-                                    display:block;
-                                    opacity:.65;
-                                ">
-                                    ${escapeHTML(
-                                        student.email || ""
-                                    )}
-                                </small>
-
-                            </div>
-
-                        </div>
-
-                    </td>
+function formatStudentData(value) {
 
 
-                    <!-- ACTION -->
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
 
-                    <td>
-                        <span>
-                            Completed workout
-                        </span>
-                    </td>
+        return "--";
 
-
-                    <!-- GOAL -->
-
-                    <td>
-                        ${escapeHTML(goal)}
-                    </td>
+    }
 
 
-                    <!-- SCORE -->
+    if (Array.isArray(value)) {
 
-                    <td>
-                        <b>
-                            ${score}
-                        </b>
-                    </td>
+        return value.join(", ");
+
+    }
 
 
-                    <!-- STATUS -->
+    if (typeof value === "object") {
 
-                    <td>
+        return Object.values(value)
+            .join(", ");
 
-                        <span
-                            class="badge-status ${
-                                isActive
-                                    ? "active"
-                                    : "inactive"
-                            }"
-                        >
-                            ${status}
-                        </span>
+    }
 
-                    </td>
 
-                </tr>
-
-            `;
-
-        }).join("");
+    return String(value);
 
 }
 
@@ -400,9 +1016,9 @@ function renderRealtimeStudents(
 // BASIC HTML ESCAPE
 // ==========================================================
 
-function escapeHTML(value) {
+function safeHTML(value) {
 
-    return String(value || "")
+    return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -410,8 +1026,6 @@ function escapeHTML(value) {
         .replace(/'/g, "&#039;");
 
 }
-
-
 
 } 
 document.querySelectorAll(".nav-item").forEach(a=>{if(location.pathname.endsWith(a.getAttribute("href")))a.classList.add("active")});
@@ -421,99 +1035,73 @@ document.getElementById("bmiBtn")?.addEventListener("click",calcBMI);document.ge
 document.getElementById("sendChat")?.addEventListener("click",()=>{let i=document.getElementById("chatInput");if(!i)return;sendChat(i.value);i.value=""});document.getElementById("chatInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("sendChat").click()});document.querySelectorAll(".suggestions button").forEach(b=>b.onclick=()=>sendChat(b.dataset.q));
 renderWorkouts();renderMeals();renderHabits();renderUsers();
 
-// ==========================================
-// PERMANENT USER NAME
-// ==========================================
+// ==========================================================
+// REALTIME STUDENT PRESENCE
+// ==========================================================
 
-function saveSideName(name) {
+firebase.auth().onAuthStateChanged(
+    function(user) {
 
-    name = (name || "").trim();
-
-    if (!name) return;
-
-    // Save name permanently in browser
-    S.set("sideName", name);
-
-    // Show name in sidebar
-    var sideName = document.getElementById("sideName");
-
-    if (sideName) {
-        sideName.textContent = name;
-    }
-}
+        if (!user) return;
 
 
-// ==========================================
-// GET USER NAME
-// ==========================================
-
-function loadSideName() {
-
-    var savedName = S.get("sideName", "");
-
-    var sideName =
-        document.getElementById("sideName");
+        const connectedRef =
+            firebase
+                .database()
+                .ref(".info/connected");
 
 
-    if (!sideName) return;
+        const presenceRef =
+            firebase
+                .database()
+                .ref(
+                    "presence/" +
+                    user.uid
+                );
 
 
-    // If name already saved
-    if (savedName) {
-
-        sideName.textContent = savedName;
-
-        return;
-    }
+        connectedRef.on(
+            "value",
+            function(snapshot) {
 
 
-    // Try Firebase current user
-    if (
-        typeof firebase !== "undefined" &&
-        firebase.auth
-    ) {
+                if (
+                    snapshot.val() !== true
+                ) {
 
-        firebase.auth().onAuthStateChanged(
-            function(user) {
+                    return;
 
-                if (!user) return;
+                }
 
 
-                var emailName =
-                    user.email
-                        ? user.email
-                            .split("@")[0]
-                        : "User";
+                // Browser close / internet disconnect
+                // par Firebase automatically offline karega.
+
+                presenceRef
+                    .onDisconnect()
+                    .set({
+
+                        online: false,
+
+                        lastSeen:
+                            firebase.database.ServerValue.TIMESTAMP
+
+                    });
 
 
-                var finalName =
-                    user.displayName ||
-                    emailName ||
-                    "User";
+                // Abhi online
 
+                presenceRef.set({
 
-                saveSideName(finalName);
+                    online: true,
+
+                    lastSeen:
+                        firebase.database.ServerValue.TIMESTAMP
+
+                });
 
             }
         );
 
     }
-
-}
-
-
-// ==========================================
-// LOAD NAME WHEN PAGE OPENS
-// ==========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        loadSideName();
-
-    }
 );
-
-
-
