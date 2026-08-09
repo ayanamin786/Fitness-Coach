@@ -170,45 +170,14 @@ if (continuewithgoogle) {
                 console.log(
                     "Google Login User:",
                     user
-                );
+                )
+                .then( () => {
 
+                    // ==========================================
+                    // GO TO DASHBOARD
+                    // ==========================================
 
-                // ==========================================
-                // SAVE / UPDATE USER PROFILE
-                // ==========================================
-
-                // await saveStudentProfile(
-                //     user,
-                //     {
-
-                //         // Google account name
-                //         name:
-                //             user.displayName || "",
-
-                //         // Google profile picture
-                //         profilePic:
-                //             user.photoURL || "",
-
-                //         // Login provider
-                //         provider:
-                //             "google",
-
-                //         active:
-                //             true
-                //     }
-                // );
-
-
-                // console.log(
-                //     "Google user login data saved!"
-                // );
-
-
-                // ==========================================
-                // SUCCESS MESSAGE
-                // ==========================================
-
-                Swal.fire({
+                    Swal.fire({
 
                     title:
                         "Login Successful!",
@@ -219,18 +188,11 @@ if (continuewithgoogle) {
 
                     icon:
                         "success",
-
-
-
-                }).then( () => {
-
-                    // ==========================================
-                    // GO TO DASHBOARD
-                    // ==========================================
-
+                    })
                     window.location.replace(
                         "dashboard.html"
                     );
+
 
                 });
 
