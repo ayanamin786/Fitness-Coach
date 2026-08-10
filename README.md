@@ -1,9 +1,10 @@
 # AI Fitness Coach — Multi-Page Edition
-For Login To Admin Panel :
-Enter Email And Password For Login As Admin :
-Email : admin@gmail.com
-Password : admin123
-Successful login → `admin.html`
+
+1. For Login To Admin Panel :
+2. Enter Email And Password For Login As Admin :
+3. Email : admin@gmail.com
+4. Password : admin123
+5. Successful login → `admin.html`
 
 
 Flow:
