@@ -7,7 +7,7 @@
 5. Successful login → `admin.html`
 
 
-Flow:
+For Login As Student:
 1. Open : https://fitness-coach-flax-iota.vercel.app/
 2. New users → Sign Up
 3. Existing users → Log In
