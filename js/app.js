@@ -1641,3 +1641,4 @@ renderHabits();
 renderUsers();
 
 window.openStudentDetails = openStudentDetails;
+

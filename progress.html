@@ -28,8 +28,42 @@
 <a class="nav-item" href="coach.html"><i class="bi bi-stars"></i> AI Coach</a>
 </nav>
 <div class="side-label mt-4">SYSTEM</div><a class="nav-item" href="admin.html"><i class="bi bi-shield-check"></i> Admin Center</a>
-<div class="side-bottom"><div class="mini-user"><div class="avatar">A</div><div><b id="sideName">Ayan</b><small>Personal plan</small></div></div><button id="logoutBtn" class="ghost-btn w-100"><i class="bi bi-box-arrow-right"></i> Logout</button></div>
-</aside><main class="main"><header class="topbar"><div class="mobile-brand">✦ AI FITNESS COACH</div><div class="top-actions"><span class="live-dot"></span><span class="d-none d-sm-inline">Coach system online</span><button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme"><i class="bi bi-circle-half"></i></button><button class="icon-btn"><i class="bi bi-bell"></i></button><div class="avatar">A</div></div></header><div class="page-section"><div class="section-heading"><div class="eyebrow">06 / ANALYTICS</div><h2>Your evolution, visualized.</h2><p>Seven days of momentum at a glance.</p></div><div class="analytics-card"><div class="analytics-top"><div><small>WEEKLY WORKOUT COMPLETION</small><h3>73.4% <span>↗ 18.4%</span></h3></div><div class="filter-pills"><button class="active">7D</button><button>30D</button><button>90D</button></div></div><div class="big-chart"><div class="chart-grid"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div><div class="line-bars"><i style="height:48%"></i><i style="height:68%"></i><i style="height:74%"></i><i style="height:52%"></i><i style="height:86%"></i><i style="height:80%"></i><i style="height:66%"></i></div></div></div></div><footer><span>✦ AI FITNESS COACH</span><span>Personal Fitness Intelligence · Frontend Prototype</span></footer></main><script>if(localStorage.getItem("fitnessLoggedIn")!=="true"){location.href="login.html"}</script><script src="js/app.js"></script>
+<div class="side-bottom">
+    
+<div class="side-bottom"><div class="mini-user">
+    <img
+        class="avatar profile-avatar"
+        src="default-avatar.png"
+        alt="Profile"
+    >
+    <button id="logoutBtn" class="ghost-btn w-100"><i class="bi bi-box-arrow-right"></i> Logout</button></div>
+</aside><main class="main"><header class="topbar"><div class="mobile-brand">✦ AI FITNESS COACH</div><div class="top-actions"><span class="live-dot"></span><span class="d-none d-sm-inline">Coach system online</span><button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme"><i class="bi bi-circle-half"></i></button><button class="icon-btn"><i class="bi bi-bell"></i></button><img
+    class="avatar profile-avatar"
+    src="default-avatar.png"
+    alt="Profile"
+></div></header><div class="page-section"><div class="section-heading"><div class="eyebrow">06 / ANALYTICS</div><h2>Your evolution, visualized.</h2><p>Seven days of momentum at a glance.</p></div><div class="analytics-card"><div class="analytics-top"><div><small>WEEKLY WORKOUT COMPLETION</small><h3>73.4% <span>↗ 18.4%</span></h3></div><div class="filter-pills"><button class="active">7D</button><button>30D</button><button>90D</button></div></div><div class="big-chart"><div class="chart-grid"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div><div class="line-bars"><i style="height:48%"></i><i style="height:68%"></i><i style="height:74%"></i><i style="height:52%"></i><i style="height:86%"></i><i style="height:80%"></i><i style="height:66%"></i></div></div></div></div><footer><span>✦ AI FITNESS COACH</span><span>Personal Fitness Intelligence · Frontend Prototype</span></footer></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+   <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyBsUF58u3v36RUfmHuP_65HPFIpkuEUVXA",
+  authDomain: "fitness-coach-e2ca6.firebaseapp.com",
+  databaseURL: "https://fitness-coach-e2ca6-default-rtdb.firebaseio.com",
+  projectId: "fitness-coach-e2ca6",
+  storageBucket: "fitness-coach-e2ca6.firebasestorage.app",
+  messagingSenderId: "502727638349",
+  appId: "1:502727638349:web:5ea34535106811fc694b04"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+
+
+<script src="./js/profile.js"></script>
+<script>if(localStorage.getItem("fitnessLoggedIn")!=="true"){location.href="login.html"}</script><script src="js/app.js"></script>
 
 
 <script src="js/theme.js"></script>

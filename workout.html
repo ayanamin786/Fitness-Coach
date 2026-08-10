@@ -31,9 +31,15 @@
 </nav>
 
 
+<div class="side-bottom">
+    
 <div class="side-bottom"><div class="mini-user">
-    <div class="avatar">A</div><div><b id="sideName">Ayan</b>
-        <small>Personal plan</small></div></div><button id="logoutBtn" class="ghost-btn w-100"><i class="bi bi-box-arrow-right"></i> Logout</button></div>
+    <img
+        class="avatar profile-avatar"
+        src="default-avatar.png"
+        alt="Profile"
+    >
+    <button id="logoutBtn" class="ghost-btn w-100"><i class="bi bi-box-arrow-right"></i> Logout</button></div>
 </aside>
 <main class="main">
     <header class="topbar">
@@ -43,7 +49,11 @@
         </span><span class="d-none d-sm-inline">Coach system online</span>
         <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme"><i class="bi bi-circle-half"></i></button>
         <button class="icon-btn"><i class="bi bi-bell"></i></button>
-        <div class="avatar">A</div>
+        <img
+    class="avatar profile-avatar"
+    src="default-avatar.png"
+    alt="Profile"
+>
     </div>
     </header><div class="page-section">
         <div class="section-heading">
@@ -56,6 +66,27 @@
             <span>Personal Fitness Intelligence · Frontend Prototype</span>
         </footer>
     </main>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+   <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyBsUF58u3v36RUfmHuP_65HPFIpkuEUVXA",
+  authDomain: "fitness-coach-e2ca6.firebaseapp.com",
+  databaseURL: "https://fitness-coach-e2ca6-default-rtdb.firebaseio.com",
+  projectId: "fitness-coach-e2ca6",
+  storageBucket: "fitness-coach-e2ca6.firebasestorage.app",
+  messagingSenderId: "502727638349",
+  appId: "1:502727638349:web:5ea34535106811fc694b04"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+
+
+<script src="./js/profile.js"></script>
     <script>if(localStorage.getItem("fitnessLoggedIn")!=="true"){
         location.href="login.html"}
     </script>

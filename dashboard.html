@@ -1110,25 +1110,13 @@
 
     <div class="side-bottom">
 
-        <div class="mini-user">
-
-            <div class="avatar">
-                A
-            </div>
-
-            <div>
-
-                <b id="sideName">
-                    Ayan
-                </b>
-
-                <small>
-                    Personal plan
-                </small>
-
-            </div>
-
-        </div>
+       
+<div class="side-bottom"><div class="mini-user">
+    <img
+        class="avatar profile-avatar"
+        src="default-avatar.png"
+        alt="Profile"
+    >
 
 
         <button
@@ -1193,10 +1181,45 @@
                 <i class="bi bi-bell"></i>
             </button>
 
+            <div class="profile-header-area">
 
-            <div class="avatar">
-                A
-            </div>
+    <div class="profile-avatar-wrap">
+
+        <img
+            id="headerProfilePic"
+            class="avatar profile-avatar"
+            src="default-avatar.png"
+            alt="Profile"
+        >
+
+    </div>
+
+
+    <label
+        for="profilePicInput"
+        id="profilePicBtn"
+        class="profile-upload-btn"
+    >
+
+        <i class="bi bi-camera-fill"></i>
+
+        <span>
+            Upload Profile Pic
+        </span>
+
+    </label>
+
+
+    <input
+        type="file"
+        id="profilePicInput"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+    >
+
+</div>
+
+           
 
         </div>
 
@@ -2402,7 +2425,23 @@
 
 </main>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
+   <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyBsUF58u3v36RUfmHuP_65HPFIpkuEUVXA",
+  authDomain: "fitness-coach-e2ca6.firebaseapp.com",
+  databaseURL: "https://fitness-coach-e2ca6-default-rtdb.firebaseio.com",
+  projectId: "fitness-coach-e2ca6",
+  storageBucket: "fitness-coach-e2ca6.firebasestorage.app",
+  messagingSenderId: "502727638349",
+  appId: "1:502727638349:web:5ea34535106811fc694b04"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+    </script>
 
 <!-- =========================================================
      LOGIN PROTECTION
@@ -2877,8 +2916,9 @@
 
 </script>
 
+<script src="js/profile.js"></script>
 
 </body>
 
 </html>
-```
+
