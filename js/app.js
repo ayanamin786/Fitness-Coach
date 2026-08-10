@@ -1642,3 +1642,174 @@ renderUsers();
 
 window.openStudentDetails = openStudentDetails;
 
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const menuBtn = document.getElementById("mobileMenuBtn");
+    const sidebar = document.getElementById("mainSidebar");
+
+    if (!menuBtn || !sidebar) {
+        console.error("Sidebar ya menu button nahi mila.");
+        return;
+    }
+
+
+    function toggleSidebar() {
+
+        const isOpen =
+            sidebar.classList.toggle("sidebar-open");
+
+        document.body.classList.toggle(
+            "sidebar-menu-open",
+            isOpen
+        );
+
+        menuBtn.setAttribute(
+            "aria-expanded",
+            isOpen ? "true" : "false"
+        );
+
+
+        const icon = menuBtn.querySelector("i");
+
+        if (icon) {
+
+            icon.className = isOpen
+                ? "bi bi-x-lg"
+                : "bi bi-list";
+
+        }
+
+    }
+
+
+    menuBtn.addEventListener(
+        "click",
+        toggleSidebar
+    );
+
+
+    /* Close sidebar when clicking overlay */
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (!sidebar.classList.contains("sidebar-open")) {
+                return;
+            }
+
+
+            const clickedInsideSidebar =
+                sidebar.contains(event.target);
+
+            const clickedMenuButton =
+                menuBtn.contains(event.target);
+
+
+            if (
+                !clickedInsideSidebar &&
+                !clickedMenuButton
+            ) {
+
+                sidebar.classList.remove(
+                    "sidebar-open"
+                );
+
+                document.body.classList.remove(
+                    "sidebar-menu-open"
+                );
+
+                menuBtn.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+
+                const icon =
+                    menuBtn.querySelector("i");
+
+                if (icon) {
+                    icon.className = "bi bi-list";
+                }
+
+            }
+
+        }
+    );
+
+
+    /* Close sidebar after clicking navigation link */
+
+    sidebar.querySelectorAll(".nav-item").forEach(
+        function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    sidebar.classList.remove(
+                        "sidebar-open"
+                    );
+
+                    document.body.classList.remove(
+                        "sidebar-menu-open"
+                    );
+
+                    menuBtn.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+
+                    const icon =
+                        menuBtn.querySelector("i");
+
+                    if (icon) {
+                        icon.className =
+                            "bi bi-list";
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    /* Close with ESC */
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape") {
+
+                sidebar.classList.remove(
+                    "sidebar-open"
+                );
+
+                document.body.classList.remove(
+                    "sidebar-menu-open"
+                );
+
+                menuBtn.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+
+                const icon =
+                    menuBtn.querySelector("i");
+
+                if (icon) {
+                    icon.className =
+                        "bi bi-list";
+                }
+
+            }
+
+        }
+    );
+
+});

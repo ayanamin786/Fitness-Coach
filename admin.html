@@ -379,12 +379,20 @@
 
 <body>
 
+<!-- =====================================================
+     MOBILE SIDEBAR OVERLAY
+     ===================================================== -->
+
+<div
+    class="mobile-sidebar-overlay"
+    id="mobileSidebarOverlay"
+></div>
 
 <!-- =====================================================
      SIDEBAR
 ====================================================== -->
 
-<aside class="sidebar">
+<aside id="mainSidebar" class="sidebar">
 
 
     <div class="brand">
@@ -551,6 +559,17 @@
 
     <header class="topbar">
 
+           <button
+        
+        id="mobileMenuBtn"
+        class="mobile-menu-btn"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-controls="mainSidebar"
+        aria-expanded="false"
+    >
+        <i class="bi bi-list"></i>
+    </button>
 
         <div class="mobile-brand">
             ✦ AI FITNESS COACH

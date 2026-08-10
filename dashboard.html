@@ -26,7 +26,7 @@
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         rel="stylesheet"
     >
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css"/>
 
     <!-- =====================================================
          PROJECT CSS
@@ -1006,11 +1006,20 @@
 <body>
 
 
+<!-- =====================================================
+     MOBILE SIDEBAR OVERLAY
+     ===================================================== -->
+
+<div
+    class="mobile-sidebar-overlay"
+    id="mobileSidebarOverlay"
+></div>
+
 <!-- =========================================================
      SIDEBAR
      ========================================================= -->
 
-<aside class="sidebar">
+<aside id="mainSidebar" class="sidebar">
 
     <div class="brand">
 
@@ -1145,6 +1154,24 @@
          ===================================================== -->
 
     <header class="topbar">
+
+
+           <!-- =================================================
+         MOBILE / TABLET HAMBURGER
+         ================================================= -->
+
+    <button
+        
+        id="mobileMenuBtn"
+        class="mobile-menu-btn"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-controls="mainSidebar"
+        aria-expanded="false"
+    >
+        <i class="bi bi-list"></i>
+    </button>
+       
 
         <div class="mobile-brand">
 
@@ -2915,8 +2942,9 @@
 })();
 
 </script>
-
+<script src="/js/app.js"></script>
 <script src="js/profile.js"></script>
+
 
 </body>
 

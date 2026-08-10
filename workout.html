@@ -8,7 +8,17 @@
 <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
-    <aside class="sidebar">
+
+    <!-- =====================================================
+     MOBILE SIDEBAR OVERLAY
+     ===================================================== -->
+
+<div
+    class="mobile-sidebar-overlay"
+    id="mobileSidebarOverlay"
+></div>
+
+    <aside id="mainSidebar" class="sidebar">
 <div class="brand"><span class="brand-mark">✦</span>
     <span>AI FITNESS<br><small>COACH</small></span></div>
 <div class="side-label">WORKSPACE</div><nav>
@@ -43,6 +53,19 @@
 </aside>
 <main class="main">
     <header class="topbar">
+
+           <button
+        
+        id="mobileMenuBtn"
+        class="mobile-menu-btn"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-controls="mainSidebar"
+        aria-expanded="false"
+    >
+        <i class="bi bi-list"></i>
+    </button>
+
         <div class="mobile-brand">✦ AI FITNESS COACH</div>
         <div class="top-actions"><span class="live-dot">
 
