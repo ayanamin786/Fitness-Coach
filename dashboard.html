@@ -1,22 +1,2884 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — AI Fitness Coach</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link href="css/style.css" rel="stylesheet">
-</head><body><aside class="sidebar">
-<div class="brand"><span class="brand-mark">✦</span><span>AI FITNESS<br><small>COACH</small></span></div>
-<div class="side-label">WORKSPACE</div><nav>
-<a class="nav-item" href="dashboard.html"><i class="bi bi-grid-1x2-fill"></i> Overview</a>
-<a class="nav-item" href="bmi.html"><i class="bi bi-activity"></i> BMI</a>
-<a class="nav-item" href="calories.html"><i class="bi bi-fire"></i> Calories</a>
-<a class="nav-item" href="workout.html"><i class="bi bi-lightning-charge-fill"></i> Workout</a>
-<a class="nav-item" href="nutrition.html"><i class="bi bi-egg-fried"></i> Nutrition</a>
-<a class="nav-item" href="habits.html"><i class="bi bi-check2-circle"></i> Habits</a>
-<a class="nav-item" href="progress.html"><i class="bi bi-bar-chart-fill"></i> Progress</a>
-<a class="nav-item" href="coach.html"><i class="bi bi-stars"></i> AI Coach</a>
-</nav>
+<html lang="en">
 
-<div class="side-bottom"><div class="mini-user"><div class="avatar">A</div><div><b id="sideName">Ayan</b><small>Personal plan</small></div></div><button id="logoutBtn" class="ghost-btn w-100"><i class="bi bi-box-arrow-right"></i> Logout</button></div>
-</aside><main class="main"><header class="topbar"><div class="mobile-brand">✦ AI FITNESS COACH</div><div class="top-actions"><span class="live-dot"></span><span class="d-none d-sm-inline">Coach system online</span><button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme"><i class="bi bi-circle-half"></i></button><button class="icon-btn"><i class="bi bi-bell"></i></button><div class="avatar">A</div></div></header><div class="page-section"><div class="eyebrow">PERSONAL FITNESS INTELLIGENCE <span>● LIVE</span></div><div class="hero-grid"><div><h1>YOUR BODY.<br><em>YOUR PLAN.</em><br>YOUR EVOLUTION.</h1><p class="hero-copy">Personalized fitness guidance, smarter habits and measurable progress — all in one intelligent workspace.</p><div class="hero-buttons"><a href="workout.html" class="btn-primary">Start today's workout <i class="bi bi-arrow-up-right"></i></a><a href="coach.html" class="btn-secondary">Ask your AI Coach</a></div><div class="trust-row"><span><b>87</b> Fitness score</span><span><b>12</b> day streak</span><span><b>6/8</b> water</span></div></div><div class="hero-visual"><div class="dashboard-mock"><div class="mock-top"><span>Today / Overview</span><span class="tiny-pill">OPTIMAL</span></div><div class="score-row"><div><small>FITNESS SCORE</small><strong>87</strong><span>/100</span></div><div class="ring"><b>87%</b></div></div><div class="mock-grid"><div><small>CALORIES</small><b>2,350</b><span>kcal target</span></div><div><small>WORKOUT</small><b>72%</b><span>complete</span></div><div><small>WATER</small><b>6/8</b><span>glasses</span></div><div><small>STREAK</small><b>12 🔥</b><span>days strong</span></div></div><div class="mock-chart"><div class="chart-title">WEEKLY PERFORMANCE <span>+18.4%</span></div><div class="bars"><i style="height:42%"></i><i style="height:58%"></i><i style="height:48%"></i><i style="height:72%"></i><i style="height:64%"></i><i style="height:88%"></i><i style="height:78%"></i></div></div></div></div></div><div class="stats-strip mt-5"><div><small>DAILY TARGET</small><b>2,350 kcal</b><span>Estimated</span></div><div><small>BODY MASS</small><b>22.9 BMI</b><span>Normal range</span></div><div><small>WEIGHT</small><b>70 kg</b><span>Current</span></div><div><small>GOAL</small><b>Muscle Gain</b><span>On track ↗</span></div></div></div><footer><span>✦ AI FITNESS COACH</span><span>Personal Fitness Intelligence · Frontend Prototype</span></footer></main><script>if(localStorage.getItem("fitnessLoggedIn")!=="true"){location.href="login.html"}</script><script src="js/app.js"></script></body></html>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dashboard — AI Fitness Coach</title>
+
+
+    <!-- =====================================================
+         BOOTSTRAP
+         ===================================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         PROJECT CSS
+         ===================================================== -->
+
+    <link
+        href="css/style.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/theme.css"
+    >
+
+
+    <!-- =====================================================
+         PAGE-SPECIFIC PREMIUM SECTIONS CSS
+         ===================================================== -->
+
+    <style>
+
+        /* =================================================
+           PREMIUM SECTION
+           ================================================= */
+
+        .premium-section {
+            position: relative;
+
+            margin-top: 80px;
+            padding: 70px 0;
+
+            overflow: hidden;
+        }
+
+
+        .premium-section::before {
+            content: "";
+
+            position: absolute;
+
+            width: 420px;
+            height: 420px;
+
+            top: 10%;
+            left: -180px;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(99, 91, 255, 0.12),
+                    transparent 70%
+                );
+
+            pointer-events: none;
+        }
+
+
+        .premium-section::after {
+            content: "";
+
+            position: absolute;
+
+            width: 380px;
+            height: 380px;
+
+            right: -170px;
+            bottom: 0;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(0, 191, 166, 0.09),
+                    transparent 70%
+                );
+
+            pointer-events: none;
+        }
+
+
+        /* =================================================
+           SECTION HEADER
+           ================================================= */
+
+        .premium-section-header {
+            position: relative;
+            z-index: 2;
+
+            text-align: center;
+
+            max-width: 760px;
+
+            margin:
+                0 auto 42px;
+        }
+
+
+        .premium-eyebrow {
+            display: inline-flex;
+
+            align-items: center;
+            gap: 8px;
+
+            padding:
+                8px 14px;
+
+            border-radius:
+                999px;
+
+            background:
+                var(--primary-soft);
+
+            border:
+                1px solid var(--border);
+
+            color:
+                var(--primary);
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1.8px;
+        }
+
+
+        .premium-eyebrow::before {
+            content: "";
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background:
+                var(--accent);
+
+            box-shadow:
+                0 0 0 5px
+                var(--accent-soft);
+        }
+
+        
+
+        .premium-section-header h2 {
+            margin:
+                18px 0 12px;
+
+            font-size:
+                clamp(32px, 5vw, 52px);
+
+            line-height:
+                1.05;
+
+            font-weight:
+                900;
+
+            letter-spacing:
+                -1.8px;
+
+            color:
+                var(--text);
+        }
+
+
+        .premium-section-header p {
+            max-width:
+                620px;
+
+            margin:
+                0 auto;
+
+            color:
+                var(--text-muted);
+
+            line-height:
+                1.7;
+
+            font-size:
+                15px;
+        }
+
+
+        /* =================================================
+           SLIDER
+           ================================================= */
+
+        .premium-slider-container {
+            position: relative;
+
+            z-index: 2;
+
+            max-width:
+                1180px;
+
+            margin:
+                0 auto;
+
+            padding:
+                0 58px;
+        }
+
+
+        .premium-slider-window {
+            overflow:
+                hidden;
+
+            border-radius:
+                26px;
+        }
+
+
+        .premium-slider-track {
+            display:
+                flex;
+
+            gap:
+                20px;
+
+            transition:
+                transform 0.65s
+                cubic-bezier(.22,1,.36,1);
+
+            will-change:
+                transform;
+        }
+
+
+        /* =================================================
+           TESTIMONIAL CARD
+           ================================================= */
+
+        .testimonial-card {
+            flex:
+                0 0 calc(33.333% - 14px);
+
+            min-width:
+                0;
+
+            padding:
+                28px;
+
+            border-radius:
+                24px;
+
+            background:
+                var(--surface);
+
+            border:
+                1px solid var(--border);
+
+            box-shadow:
+                var(--shadow-md);
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            transition:
+                transform .3s ease,
+                border-color .3s ease,
+                box-shadow .3s ease;
+        }
+
+
+        .testimonial-card::before {
+            content:
+                "“";
+
+            position:
+                absolute;
+
+            top:
+                -22px;
+
+            right:
+                18px;
+
+            font-size:
+                120px;
+
+            line-height:
+                1;
+
+            font-family:
+                Georgia,
+                serif;
+
+            color:
+                var(--primary-soft);
+
+            pointer-events:
+                none;
+        }
+
+
+        .testimonial-card:hover {
+            transform:
+                translateY(-7px);
+
+            border-color:
+                var(--primary);
+
+            box-shadow:
+                var(--shadow-lg);
+        }
+
+
+        .testimonial-user {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                14px;
+
+            position:
+                relative;
+
+            z-index:
+                2;
+        }
+
+
+        .testimonial-user img {
+            width:
+                58px;
+
+            height:
+                58px;
+
+            object-fit:
+                cover;
+
+            border-radius:
+                50%;
+
+            border:
+                3px solid var(--surface);
+
+            outline:
+                2px solid var(--primary-soft);
+
+            box-shadow:
+                var(--shadow-sm);
+        }
+
+
+        .testimonial-user h3 {
+            margin:
+                0 0 4px;
+
+            font-size:
+                16px;
+
+            font-weight:
+                800;
+
+            color:
+                var(--text);
+        }
+
+
+        .testimonial-user span {
+            color:
+                var(--text-muted);
+
+            font-size:
+                12px;
+        }
+
+
+        .testimonial-stars {
+            margin-top:
+                20px;
+
+            color:
+                #f5b301;
+
+            font-size:
+                18px;
+
+            letter-spacing:
+                3px;
+        }
+
+
+        .testimonial-review {
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            margin:
+                18px 0 24px;
+
+            color:
+                var(--text-secondary);
+
+            line-height:
+                1.75;
+
+            font-size:
+                14px;
+        }
+
+
+        .testimonial-result {
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                10px;
+
+            padding-top:
+                18px;
+
+            border-top:
+                1px solid var(--border);
+        }
+
+
+        .testimonial-result span {
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                4px;
+        }
+
+
+        .testimonial-result strong {
+            font-size:
+                18px;
+
+            color:
+                var(--primary);
+        }
+
+
+        .testimonial-result small {
+            color:
+                var(--text-muted);
+
+            font-size:
+                11px;
+        }
+
+
+        /* =================================================
+           SERVICE CARD
+           ================================================= */
+
+        .service-card {
+            flex:
+                0 0 calc(33.333% - 14px);
+
+            border-radius:
+                24px;
+
+            overflow:
+                hidden;
+
+            background:
+                var(--surface);
+
+            border:
+                1px solid var(--border);
+
+            box-shadow:
+                var(--shadow-md);
+
+            transition:
+                transform .3s ease,
+                box-shadow .3s ease,
+                border-color .3s ease;
+        }
+
+
+        .service-card:hover {
+            transform:
+                translateY(-8px);
+
+            border-color:
+                var(--primary);
+
+            box-shadow:
+                var(--shadow-lg);
+        }
+
+
+        .service-image {
+            position:
+                relative;
+
+            height:
+                205px;
+
+            overflow:
+                hidden;
+        }
+
+
+        .service-image img {
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                cover;
+
+            transition:
+                transform .6s
+                cubic-bezier(.22,1,.36,1);
+        }
+
+
+        .service-card:hover .service-image img {
+            transform:
+                scale(1.08);
+        }
+
+
+        .service-image::after {
+            content:
+                "";
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    transparent 45%,
+                    rgba(0,0,0,.58)
+                );
+        }
+
+
+        .service-icon {
+            position:
+                absolute;
+
+            z-index:
+                3;
+
+            left:
+                20px;
+
+            bottom:
+                18px;
+
+            width:
+                48px;
+
+            height:
+                48px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                15px;
+
+            background:
+                rgba(255,255,255,.92);
+
+            color:
+                #635bff;
+
+            font-size:
+                21px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.2);
+        }
+
+
+        .service-content {
+            padding:
+                25px;
+        }
+
+
+        .service-content h3 {
+            margin:
+                0 0 10px;
+
+            font-size:
+                20px;
+
+            font-weight:
+                850;
+
+            color:
+                var(--text);
+        }
+
+
+        .service-content p {
+            margin:
+                0 0 20px;
+
+            color:
+                var(--text-muted);
+
+            line-height:
+                1.65;
+
+            font-size:
+                13px;
+        }
+
+
+        .service-bottom {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                10px;
+
+            padding-top:
+                18px;
+
+            border-top:
+                1px solid var(--border);
+        }
+
+
+        .service-tag {
+            padding:
+                7px 11px;
+
+            border-radius:
+                999px;
+
+            background:
+                var(--primary-soft);
+
+            color:
+                var(--primary);
+
+            font-size:
+                10px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .7px;
+        }
+
+
+        .service-link {
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            color:
+                var(--primary);
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+
+            text-decoration:
+                none;
+        }
+
+
+        .service-link i {
+            transition:
+                transform .2s ease;
+        }
+
+
+        .service-link:hover i {
+            transform:
+                translate(3px,-3px);
+        }
+
+
+        /* =================================================
+           SLIDER BUTTONS
+           ================================================= */
+
+        .premium-slider-button {
+            position:
+                absolute;
+
+            top:
+                50%;
+
+            transform:
+                translateY(-50%);
+
+            z-index:
+                10;
+
+            width:
+                46px;
+
+            height:
+                46px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                50%;
+
+            border:
+                1px solid var(--border);
+
+            background:
+                var(--surface);
+
+            color:
+                var(--primary);
+
+            box-shadow:
+                var(--shadow-md);
+
+            cursor:
+                pointer;
+
+            transition:
+                all .25s ease;
+        }
+
+
+        .premium-slider-button:hover {
+            background:
+                var(--primary);
+
+            color:
+                #fff;
+
+            border-color:
+                var(--primary);
+
+            transform:
+                translateY(-50%) scale(1.08);
+
+            box-shadow:
+                var(--shadow-primary);
+        }
+
+
+        .premium-prev {
+            left:
+                0;
+        }
+
+
+        .premium-next {
+            right:
+                0;
+        }
+
+
+        /* =================================================
+           SLIDER DOTS
+           ================================================= */
+
+        .premium-slider-dots {
+            display:
+                flex;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            margin-top:
+                28px;
+        }
+
+
+        .premium-slider-dot {
+            width:
+                8px;
+
+            height:
+                8px;
+
+            padding:
+                0;
+
+            border:
+                0;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--border-hover);
+
+            cursor:
+                pointer;
+
+            transition:
+                all .25s ease;
+        }
+
+
+        .premium-slider-dot.active {
+            width:
+                26px;
+
+            border-radius:
+                999px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--primary),
+                    var(--accent)
+                );
+        }
+
+
+        /* =================================================
+           DARK MODE POLISH
+           ================================================= */
+
+        html[data-theme="dark"] .testimonial-card,
+        html[data-theme="dark"] .service-card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17,24,39,.98),
+                    rgba(15,23,42,.94)
+                );
+        }
+
+
+        html[data-theme="dark"] .service-icon {
+            background:
+                rgba(17,24,39,.92);
+
+            color:
+                var(--primary);
+        }
+
+
+        /* =================================================
+           RESPONSIVE
+           ================================================= */
+
+        @media (max-width: 992px) {
+
+            .testimonial-card,
+            .service-card {
+                flex:
+                    0 0 calc(50% - 10px);
+            }
+
+        }
+
+
+        @media (max-width: 680px) {
+
+            .premium-section {
+                margin-top:
+                    45px;
+
+                padding:
+                    45px 0;
+            }
+
+
+            .premium-section-header {
+                margin-bottom:
+                    30px;
+
+                padding:
+                    0 15px;
+            }
+
+
+            .premium-slider-container {
+                padding:
+                    0 42px;
+            }
+
+
+            .testimonial-card,
+            .service-card {
+                flex:
+                    0 0 100%;
+            }
+
+
+            .premium-slider-button {
+                width:
+                    38px;
+
+                height:
+                    38px;
+            }
+
+
+            .premium-prev {
+                left:
+                    0;
+            }
+
+
+            .premium-next {
+                right:
+                    0;
+            }
+
+
+            .service-image {
+                height:
+                    190px;
+            }
+
+        }
+
+  
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="brand">
+
+        <span class="brand-mark">
+            ✦
+        </span>
+
+        <span>
+            AI FITNESS
+            <br>
+            <small>COACH</small>
+        </span>
+
+    </div>
+
+
+    <div class="side-label">
+        WORKSPACE
+    </div>
+
+
+    <nav>
+
+        <a
+            class="nav-item"
+            href="dashboard.html"
+        >
+            <i class="bi bi-grid-1x2-fill"></i>
+            Overview
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="bmi.html"
+        >
+            <i class="bi bi-activity"></i>
+            BMI
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="calories.html"
+        >
+            <i class="bi bi-fire"></i>
+            Calories
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="workout.html"
+        >
+            <i class="bi bi-lightning-charge-fill"></i>
+            Workout
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="nutrition.html"
+        >
+            <i class="bi bi-egg-fried"></i>
+            Nutrition
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="habits.html"
+        >
+            <i class="bi bi-check2-circle"></i>
+            Habits
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="progress.html"
+        >
+            <i class="bi bi-bar-chart-fill"></i>
+            Progress
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="coach.html"
+        >
+            <i class="bi bi-stars"></i>
+            AI Coach
+        </a>
+
+    </nav>
+
+
+    <div class="side-bottom">
+
+        <div class="mini-user">
+
+            <div class="avatar">
+                A
+            </div>
+
+            <div>
+
+                <b id="sideName">
+                    Ayan
+                </b>
+
+                <small>
+                    Personal plan
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <button
+            id="logoutBtn"
+            class="ghost-btn w-100"
+        >
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<main class="main">
+
+
+    <!-- =====================================================
+         TOPBAR
+         ===================================================== -->
+
+    <header class="topbar">
+
+        <div class="mobile-brand">
+
+            <b>
+                ✦ AI FITNESS COACH
+            </b>
+
+        </div>
+
+
+        <div class="top-actions">
+
+            <span class="live-dot"></span>
+
+            <span class="d-none d-sm-inline">
+                Coach system online
+            </span>
+
+
+            <button
+                id="themeToggle"
+                class="icon-btn"
+                type="button"
+                aria-label="Toggle theme"
+            >
+                <i class="bi bi-circle-half"></i>
+            </button>
+
+
+            <button
+                class="icon-btn"
+                type="button"
+            >
+                <i class="bi bi-bell"></i>
+            </button>
+
+
+            <div class="avatar">
+                A
+            </div>
+
+        </div>
+
+    </header>
+
+
+<!-- PREMIUM ANNOUNCEMENT SLIDER -->
+<div class="announcement-bar">
+    <div class="announcement-track">
+
+        <span>✦ NEW FITNESS PLAN LIVE NOW</span>
+        <span>•</span>
+        <span>PERSONALIZED AI WORKOUTS</span>
+        <span>•</span>
+        <span>SMART NUTRITION PLANS</span>
+        <span>•</span>
+        <span>12 DAY STREAK CHALLENGE IS LIVE</span>
+        <span>•</span>
+        <span>TRACK YOUR PROGRESS WITH AI</span>
+        <span>•</span>
+
+        <!-- Duplicate for seamless loop -->
+        <span>✦ NEW FITNESS PLAN LIVE NOW</span>
+        <span>•</span>
+        <span>PERSONALIZED AI WORKOUTS</span>
+        <span>•</span>
+        <span>SMART NUTRITION PLANS</span>
+        <span>•</span>
+        <span>12 DAY STREAK CHALLENGE IS LIVE</span>
+        <span>•</span>
+        <span>TRACK YOUR PROGRESS WITH AI</span>
+        <span>•</span>
+
+    </div>
+</div>
+
+    <!-- =====================================================
+         DASHBOARD CONTENT
+         ===================================================== -->
+
+    <div class="page-section">
+
+
+        <div class="eyebrow">
+
+            PERSONAL FITNESS INTELLIGENCE
+
+            <span>
+                ● LIVE
+            </span>
+
+        </div>
+
+
+        <!-- =================================================
+             HERO
+             ================================================= -->
+
+        <div class="hero-grid">
+
+
+            <div>
+
+                <h1>
+
+                    YOUR BODY.
+                    <br>
+
+                    <em>
+                        YOUR PLAN.
+                    </em>
+
+                    <br>
+
+                    YOUR EVOLUTION.
+
+                </h1>
+
+
+                <p class="hero-copy">
+
+                    Personalized fitness guidance,
+                    smarter habits and measurable
+                    progress — all in one intelligent
+                    workspace.
+
+                </p>
+
+
+                <div class="hero-buttons">
+
+                    <a
+                        href="workout.html"
+                        class="btn-primary"
+                    >
+                        Start today's workout
+
+                        <i class="bi bi-arrow-up-right"></i>
+
+                    </a>
+
+
+                    <a
+                        href="coach.html"
+                        class="btn-secondary"
+                    >
+                        Ask your AI Coach
+                    </a>
+
+                </div>
+
+
+                <div class="trust-row">
+
+                    <span>
+                        <b>87</b>
+                        Fitness score
+                    </span>
+
+                    <span>
+                        <b>12</b>
+                        day streak
+                    </span>
+
+                    <span>
+                        <b>6/8</b>
+                        water
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 DASHBOARD MOCKUP
+                 ================================================= -->
+
+            <div class="hero-visual">
+
+                <div class="dashboard-mock">
+
+
+                    <div class="mock-top">
+
+                        <span>
+                            Today / Overview
+                        </span>
+
+                        <span class="tiny-pill">
+                            OPTIMAL
+                        </span>
+
+                    </div>
+
+
+                    <div class="score-row">
+
+                        <div>
+
+                            <small>
+                                FITNESS SCORE
+                            </small>
+
+                            <strong>
+                                87
+                            </strong>
+
+                            <span>
+                                /100
+                            </span>
+
+                        </div>
+
+
+                        <div class="ring">
+
+                            <b>
+                                87%
+                            </b>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mock-grid">
+
+
+                        <div>
+
+                            <small>
+                                CALORIES
+                            </small>
+
+                            <b>
+                                2,350
+                            </b>
+
+                            <span>
+                                kcal target
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <small>
+                                WORKOUT
+                            </small>
+
+                            <b>
+                                72%
+                            </b>
+
+                            <span>
+                                complete
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <small>
+                                WATER
+                            </small>
+
+                            <b>
+                                6/8
+                            </b>
+
+                            <span>
+                                glasses
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <small>
+                                STREAK
+                            </small>
+
+                            <b>
+                                12 🔥
+                            </b>
+
+                            <span>
+                                days strong
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mock-chart">
+
+                        <div class="chart-title">
+
+                            WEEKLY PERFORMANCE
+
+                            <span>
+                                +18.4%
+                            </span>
+
+                        </div>
+
+
+                        <div class="bars">
+
+                            <i style="height:42%"></i>
+                            <i style="height:58%"></i>
+                            <i style="height:48%"></i>
+                            <i style="height:72%"></i>
+                            <i style="height:64%"></i>
+                            <i style="height:88%"></i>
+                            <i style="height:78%"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             STATS
+             ================================================= -->
+
+        <div class="stats-strip mt-5">
+
+
+            <div>
+
+                <small>
+                    DAILY TARGET
+                </small>
+
+                <b>
+                    2,350 kcal
+                </b>
+
+                <span>
+                    Estimated
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <small>
+                    BODY MASS
+                </small>
+
+                <b>
+                    22.9 BMI
+                </b>
+
+                <span>
+                    Normal range
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <small>
+                    WEIGHT
+                </small>
+
+                <b>
+                    70 kg
+                </b>
+
+                <span>
+                    Current
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <small>
+                    GOAL
+                </small>
+
+                <b>
+                    Muscle Gain
+                </b>
+
+                <span>
+                    On track ↗
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TESTIMONIALS
+             ================================================= -->
+
+        <section class="premium-section">
+
+
+            <div class="premium-section-header">
+
+                <span class="premium-eyebrow">
+                    COMMUNITY RESULTS
+                </span>
+
+
+                <h2>
+
+                    Loved by people
+                    <span class="gradient-text">
+                        becoming stronger.
+                    </span>
+
+                </h2>
+
+
+                <p>
+
+                    Real experiences from people using
+                    AI Fitness Coach to build healthier
+                    habits and reach their goals.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="premium-slider-container">
+
+                <button
+                    class="premium-slider-button premium-prev"
+                    id="testimonialPrev"
+                    type="button"
+                    aria-label="Previous testimonial"
+                >
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+
+                <div class="premium-slider-window">
+
+                    <div
+                        class="premium-slider-track"
+                        id="testimonialTrack"
+                    >
+
+
+                        <!-- TESTIMONIAL 1 -->
+
+                        <article class="testimonial-card">
+
+                            <div class="testimonial-user">
+
+                                <img
+                                    src="https://i.pravatar.cc/150?img=47"
+                                    alt="Ayesha Khan"
+                                >
+
+                                <div>
+
+                                    <h3>
+                                        Ayesha Khan
+                                    </h3>
+
+                                    <span>
+                                        Weight Loss Journey
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="testimonial-stars">
+                                ★★★★★
+                            </div>
+
+
+                            <p class="testimonial-review">
+
+                                “AI Fitness Coach made my
+                                fitness journey incredibly
+                                simple. I finally have a
+                                routine I can actually follow.”
+
+                            </p>
+
+
+                            <div class="testimonial-result">
+
+                                <span>
+                                    <strong>
+                                        −8.4 kg
+                                    </strong>
+
+                                    <small>
+                                        Weight lost
+                                    </small>
+                                </span>
+
+
+                                <span>
+                                    <strong>
+                                        12 weeks
+                                    </strong>
+
+                                    <small>
+                                        Consistency
+                                    </small>
+                                </span>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- TESTIMONIAL 2 -->
+
+                        <article class="testimonial-card">
+
+                            <div class="testimonial-user">
+
+                                <img
+                                    src="https://i.pravatar.cc/150?img=12"
+                                    alt="Ahmed Raza"
+                                >
+
+                                <div>
+
+                                    <h3>
+                                        Ahmed Raza
+                                    </h3>
+
+                                    <span>
+                                        Muscle Building
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="testimonial-stars">
+                                ★★★★★
+                            </div>
+
+
+                            <p class="testimonial-review">
+
+                                “The personalized workout
+                                plan completely changed
+                                my training. Everything feels
+                                structured and motivating.”
+
+                            </p>
+
+
+                            <div class="testimonial-result">
+
+                                <span>
+                                    <strong>
+                                        +5.2 kg
+                                    </strong>
+
+                                    <small>
+                                        Muscle gain
+                                    </small>
+                                </span>
+
+
+                                <span>
+                                    <strong>
+                                        16 weeks
+                                    </strong>
+
+                                    <small>
+                                        Training
+                                    </small>
+                                </span>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- TESTIMONIAL 3 -->
+
+                        <article class="testimonial-card">
+
+                            <div class="testimonial-user">
+
+                                <img
+                                    src="https://i.pravatar.cc/150?img=32"
+                                    alt="Sara Ali"
+                                >
+
+                                <div>
+
+                                    <h3>
+                                        Sara Ali
+                                    </h3>
+
+                                    <span>
+                                        Healthy Lifestyle
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="testimonial-stars">
+                                ★★★★★
+                            </div>
+
+
+                            <p class="testimonial-review">
+
+                                “The dashboard makes my
+                                meals, workouts and habits
+                                incredibly easy to track.
+                                It keeps me consistent.”
+
+                            </p>
+
+
+                            <div class="testimonial-result">
+
+                                <span>
+                                    <strong>
+                                        94%
+                                    </strong>
+
+                                    <small>
+                                        Habit score
+                                    </small>
+                                </span>
+
+
+                                <span>
+                                    <strong>
+                                        10 weeks
+                                    </strong>
+
+                                    <small>
+                                        Consistency
+                                    </small>
+                                </span>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- TESTIMONIAL 4 -->
+
+                        <article class="testimonial-card">
+
+                            <div class="testimonial-user">
+
+                                <img
+                                    src="https://i.pravatar.cc/150?img=68"
+                                    alt="Hamza Ahmed"
+                                >
+
+                                <div>
+
+                                    <h3>
+                                        Hamza Ahmed
+                                    </h3>
+
+                                    <span>
+                                        Fitness Beginner
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="testimonial-stars">
+                                ★★★★★
+                            </div>
+
+
+                            <p class="testimonial-review">
+
+                                “As a beginner I had no idea
+                                where to start. The AI coach
+                                gave me a clear plan and kept
+                                me moving every week.”
+
+                            </p>
+
+
+                            <div class="testimonial-result">
+
+                                <span>
+                                    <strong>
+                                        87%
+                                    </strong>
+
+                                    <small>
+                                        Fitness score
+                                    </small>
+                                </span>
+
+
+                                <span>
+                                    <strong>
+                                        9 weeks
+                                    </strong>
+
+                                    <small>
+                                        Active
+                                    </small>
+                                </span>
+
+                            </div>
+
+                        </article>
+
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="premium-slider-button premium-next"
+                    id="testimonialNext"
+                    type="button"
+                    aria-label="Next testimonial"
+                >
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+
+
+                <div
+                    class="premium-slider-dots"
+                    id="testimonialDots"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SERVICES
+             ================================================= -->
+
+        <section class="premium-section">
+
+
+            <div class="premium-section-header">
+
+                <span class="premium-eyebrow">
+                    FITNESS SERVICES
+                </span>
+
+
+                <h2>
+
+                    Everything you need
+                    <span class="gradient-text">
+                        to level up.
+                    </span>
+
+                </h2>
+
+
+                <p>
+
+                    Powerful fitness tools designed to
+                    help you understand your body,
+                    build better habits and stay
+                    consistent.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="premium-slider-container">
+
+                <button
+                    class="premium-slider-button premium-prev"
+                    id="servicePrev"
+                    type="button"
+                    aria-label="Previous service"
+                >
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+
+                <div class="premium-slider-window">
+
+                    <div
+                        class="premium-slider-track"
+                        id="serviceTrack"
+                    >
+
+
+                        <!-- SERVICE 1 -->
+
+                        <article class="service-card">
+
+                            <div class="service-image">
+
+                                <img
+                                    src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=900&q=85"
+                                    alt="Personal workout coaching"
+                                    loading="lazy"
+                                >
+
+                                <div class="service-icon">
+                                    <i class="bi bi-lightning-charge-fill"></i>
+                                </div>
+
+                            </div>
+
+
+                            <div class="service-content">
+
+                                <h3>
+                                    Smart Workouts
+                                </h3>
+
+
+                                <p>
+
+                                    Personalized workout
+                                    routines designed around
+                                    your fitness level and goal.
+
+                                </p>
+
+
+                                <div class="service-bottom">
+
+                                    <span class="service-tag">
+                                        TRAINING
+                                    </span>
+
+
+                                    <a
+                                        href="workout.html"
+                                        class="service-link"
+                                    >
+
+                                        Explore
+
+                                        <i class="bi bi-arrow-up-right"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- SERVICE 2 -->
+
+                        <article class="service-card">
+
+                            <div class="service-image">
+
+                                <img
+                                    src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=900&q=85"
+                                    alt="Healthy nutrition meal"
+                                    loading="lazy"
+                                >
+
+                                <div class="service-icon">
+                                    <i class="bi bi-egg-fried"></i>
+                                </div>
+
+                            </div>
+
+
+                            <div class="service-content">
+
+                                <h3>
+                                    Smart Nutrition
+                                </h3>
+
+
+                                <p>
+
+                                    Balanced meal guidance,
+                                    calorie targets and
+                                    protein-focused nutrition.
+
+                                </p>
+
+
+                                <div class="service-bottom">
+
+                                    <span class="service-tag">
+                                        NUTRITION
+                                    </span>
+
+
+                                    <a
+                                        href="nutrition.html"
+                                        class="service-link"
+                                    >
+
+                                        Explore
+
+                                        <i class="bi bi-arrow-up-right"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- SERVICE 3 -->
+
+                        <article class="service-card">
+
+                            <div class="service-image">
+
+                                <img
+                                    src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=900&q=85"
+                                    alt="Fitness health analysis"
+                                    loading="lazy"
+                                >
+
+                                <div class="service-icon">
+                                    <i class="bi bi-activity"></i>
+                                </div>
+
+                            </div>
+
+
+                            <div class="service-content">
+
+                                <h3>
+                                    BMI & Health Analysis
+                                </h3>
+
+
+                                <p>
+
+                                    Understand your body
+                                    metrics and track important
+                                    health indicators.
+
+                                </p>
+
+
+                                <div class="service-bottom">
+
+                                    <span class="service-tag">
+                                        ANALYTICS
+                                    </span>
+
+
+                                    <a
+                                        href="bmi.html"
+                                        class="service-link"
+                                    >
+
+                                        Explore
+
+                                        <i class="bi bi-arrow-up-right"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- SERVICE 4 -->
+
+                        <article class="service-card">
+
+                            <div class="service-image">
+
+                                <img
+                                    src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=900&q=85"
+                                    alt="Running fitness progress"
+                                    loading="lazy"
+                                >
+
+                                <div class="service-icon">
+                                    <i class="bi bi-bar-chart-fill"></i>
+                                </div>
+
+                            </div>
+
+
+                            <div class="service-content">
+
+                                <h3>
+                                    Progress Tracking
+                                </h3>
+
+
+                                <p>
+
+                                    Visualize your progress,
+                                    consistency, achievements
+                                    and fitness score.
+
+                                </p>
+
+
+                                <div class="service-bottom">
+
+                                    <span class="service-tag">
+                                        PROGRESS
+                                    </span>
+
+
+                                    <a
+                                        href="progress.html"
+                                        class="service-link"
+                                    >
+
+                                        Explore
+
+                                        <i class="bi bi-arrow-up-right"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- SERVICE 5 -->
+
+                        <article class="service-card">
+
+                            <div class="service-image">
+
+                                <img
+                                    src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=85"
+                                    alt="Strength training"
+                                    loading="lazy"
+                                >
+
+                                <div class="service-icon">
+                                    <i class="bi bi-person-arms-up"></i>
+                                </div>
+
+                            </div>
+
+
+                            <div class="service-content">
+
+                                <h3>
+                                    Habit Coaching
+                                </h3>
+
+
+                                <p>
+
+                                    Build powerful daily
+                                    habits for hydration,
+                                    sleep, nutrition and exercise.
+
+                                </p>
+
+
+                                <div class="service-bottom">
+
+                                    <span class="service-tag">
+                                        HABITS
+                                    </span>
+
+
+                                    <a
+                                        href="habits.html"
+                                        class="service-link"
+                                    >
+
+                                        Explore
+
+                                        <i class="bi bi-arrow-up-right"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- SERVICE 6 -->
+
+                        <article class="service-card">
+
+                            <div class="service-image">
+
+                                <img
+                                    src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=900&q=85"
+                                    alt="AI fitness coaching"
+                                    loading="lazy"
+                                >
+
+                                <div class="service-icon">
+                                    <i class="bi bi-stars"></i>
+                                </div>
+
+                            </div>
+
+
+                            <div class="service-content">
+
+                                <h3>
+                                    AI Fitness Coach
+                                </h3>
+
+
+                                <p>
+
+                                    Ask questions and get
+                                    intelligent fitness guidance
+                                    whenever you need it.
+
+                                </p>
+
+
+                                <div class="service-bottom">
+
+                                    <span class="service-tag">
+                                        AI COACH
+                                    </span>
+
+
+                                    <a
+                                        href="coach.html"
+                                        class="service-link"
+                                    >
+
+                                        Talk to AI
+
+                                        <i class="bi bi-arrow-up-right"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="premium-slider-button premium-next"
+                    id="serviceNext"
+                    type="button"
+                    aria-label="Next service"
+                >
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+
+
+                <div
+                    class="premium-slider-dots"
+                    id="serviceDots"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer>
+
+        <span>
+            ✦ AI FITNESS COACH
+        </span>
+
+        <span>
+            Personal Fitness Intelligence · Frontend Prototype
+        </span>
+
+    </footer>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     LOGIN PROTECTION
+     ========================================================= -->
+
+<script>
+
+    if (
+        localStorage.getItem("fitnessLoggedIn") !== "true"
+    ) {
+
+        location.href = "login.html";
+
+    }
+
+</script>
+
+
+
+<!-- =========================================================
+     APP JS
+     ========================================================= -->
+
+<script src="js/app.js"></script>
+
+<script src="js/theme.js"></script>
+
+
+
+<!-- =========================================================
+     PREMIUM SLIDER JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    /* =====================================================
+       GENERIC SLIDER
+       ===================================================== */
+
+    function createSlider(options) {
+
+        const track =
+            document.getElementById(options.track);
+
+        const prev =
+            document.getElementById(options.prev);
+
+        const next =
+            document.getElementById(options.next);
+
+        const dots =
+            document.getElementById(options.dots);
+
+
+        if (!track || !prev || !next || !dots) {
+            return;
+        }
+
+
+        const cards =
+            Array.from(track.children);
+
+
+        if (!cards.length) {
+            return;
+        }
+
+
+        let currentIndex = 0;
+
+        let visibleCards = 3;
+
+        let autoplay;
+
+
+        /* =================================================
+           RESPONSIVE CARD COUNT
+           ================================================= */
+
+        function getVisibleCards() {
+
+            if (window.innerWidth <= 680) {
+                return 1;
+            }
+
+            if (window.innerWidth <= 992) {
+                return 2;
+            }
+
+            return 3;
+
+        }
+
+
+        /* =================================================
+           TOTAL SLIDES
+           ================================================= */
+
+        function getMaxIndex() {
+
+            visibleCards =
+                getVisibleCards();
+
+            return Math.max(
+                0,
+                cards.length - visibleCards
+            );
+
+        }
+
+
+        /* =================================================
+           UPDATE SLIDER
+           ================================================= */
+
+        function updateSlider() {
+
+            visibleCards =
+                getVisibleCards();
+
+
+            const gap =
+                parseFloat(
+                    getComputedStyle(track).gap
+                ) || 20;
+
+
+            const cardWidth =
+                cards[0].getBoundingClientRect().width;
+
+
+            const move =
+                currentIndex *
+                (cardWidth + gap);
+
+
+            track.style.transform =
+                `translateX(-${move}px)`;
+
+
+            updateDots();
+
+        }
+
+
+        /* =================================================
+           CREATE DOTS
+           ================================================= */
+
+        function createDots() {
+
+            dots.innerHTML = "";
+
+
+            const maxIndex =
+                getMaxIndex();
+
+
+            for (
+                let i = 0;
+                i <= maxIndex;
+                i++
+            ) {
+
+                const dot =
+                    document.createElement("button");
+
+
+                dot.type =
+                    "button";
+
+
+                dot.className =
+                    "premium-slider-dot";
+
+
+                dot.setAttribute(
+                    "aria-label",
+                    `Go to slide ${i + 1}`
+                );
+
+
+                dot.addEventListener(
+                    "click",
+                    function () {
+
+                        currentIndex = i;
+
+                        updateSlider();
+
+                        restartAutoplay();
+
+                    }
+                );
+
+
+                dots.appendChild(dot);
+
+            }
+
+
+            updateDots();
+
+        }
+
+
+        /* =================================================
+           UPDATE ACTIVE DOT
+           ================================================= */
+
+        function updateDots() {
+
+            const dotElements =
+                dots.querySelectorAll(
+                    ".premium-slider-dot"
+                );
+
+
+            dotElements.forEach(
+                function (dot, index) {
+
+                    dot.classList.toggle(
+                        "active",
+                        index === currentIndex
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =================================================
+           NEXT
+           ================================================= */
+
+        function goNext() {
+
+            const maxIndex =
+                getMaxIndex();
+
+
+            if (
+                currentIndex >= maxIndex
+            ) {
+
+                currentIndex = 0;
+
+            } else {
+
+                currentIndex++;
+
+            }
+
+
+            updateSlider();
+
+        }
+
+
+        /* =================================================
+           PREVIOUS
+           ================================================= */
+
+        function goPrevious() {
+
+            const maxIndex =
+                getMaxIndex();
+
+
+            if (
+                currentIndex <= 0
+            ) {
+
+                currentIndex = maxIndex;
+
+            } else {
+
+                currentIndex--;
+
+            }
+
+
+            updateSlider();
+
+        }
+
+
+        /* =================================================
+           BUTTON EVENTS
+           ================================================= */
+
+        next.addEventListener(
+            "click",
+            function () {
+
+                goNext();
+
+                restartAutoplay();
+
+            }
+        );
+
+
+        prev.addEventListener(
+            "click",
+            function () {
+
+                goPrevious();
+
+                restartAutoplay();
+
+            }
+        );
+
+
+        /* =================================================
+           AUTOPLAY
+           ================================================= */
+
+        function startAutoplay() {
+
+            clearInterval(autoplay);
+
+
+            autoplay =
+                setInterval(
+                    goNext,
+                    5000
+                );
+
+        }
+
+
+        function restartAutoplay() {
+
+            startAutoplay();
+
+        }
+
+
+        /* =================================================
+           PAUSE WHEN HOVERED
+           ================================================= */
+
+        const container =
+            track.closest(
+                ".premium-slider-container"
+            );
+
+
+        if (container) {
+
+            container.addEventListener(
+                "mouseenter",
+                function () {
+
+                    clearInterval(
+                        autoplay
+                    );
+
+                }
+            );
+
+
+            container.addEventListener(
+                "mouseleave",
+                function () {
+
+                    startAutoplay();
+
+                }
+            );
+
+        }
+
+
+        /* =================================================
+           RESIZE
+           ================================================= */
+
+        window.addEventListener(
+            "resize",
+            function () {
+
+                const maxIndex =
+                    getMaxIndex();
+
+
+                if (
+                    currentIndex >
+                    maxIndex
+                ) {
+
+                    currentIndex =
+                        maxIndex;
+
+                }
+
+
+                createDots();
+
+                updateSlider();
+
+            }
+        );
+
+
+        /* =================================================
+           INITIALIZE
+           ================================================= */
+
+        createDots();
+
+        updateSlider();
+
+        startAutoplay();
+
+    }
+
+
+
+    /* =====================================================
+       TESTIMONIAL SLIDER
+       ===================================================== */
+
+    createSlider({
+
+        track:
+            "testimonialTrack",
+
+        prev:
+            "testimonialPrev",
+
+        next:
+            "testimonialNext",
+
+        dots:
+            "testimonialDots"
+
+    });
+
+
+
+    /* =====================================================
+       SERVICES SLIDER
+       ===================================================== */
+
+    createSlider({
+
+        track:
+            "serviceTrack",
+
+        prev:
+            "servicePrev",
+
+        next:
+            "serviceNext",
+
+        dots:
+            "serviceDots"
+
+    });
+
+
+})();
+
+</script>
+
+
+</body>
+
+</html>
+```

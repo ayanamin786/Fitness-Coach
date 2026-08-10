@@ -38,61 +38,61 @@ const S = {
    THEME
 ========================================================= */
 
-function applyTheme(theme) {
-    const resolved = theme || S.get("theme", "system");
+// function applyTheme(theme) {
+//     const resolved = theme || S.get("theme", "system");
 
-    if (resolved === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-    } 
-    else if (resolved === "dark") {
-        document.documentElement.setAttribute("data-theme", "dark");
-    } 
-    else {
-        document.documentElement.removeAttribute("data-theme");
-    }
+//     if (resolved === "light") {
+//         document.documentElement.setAttribute("data-theme", "light");
+//     } 
+//     else if (resolved === "dark") {
+//         document.documentElement.setAttribute("data-theme", "dark");
+//     } 
+//     else {
+//         document.documentElement.removeAttribute("data-theme");
+//     }
 
-    document.documentElement.style.colorScheme =
-        resolved === "light"
-            ? "light"
-            : resolved === "dark"
-                ? "dark"
-                : "light";
-}
-
-
-function toggleTheme() {
-    const current = S.get("theme", "system");
-
-    const next =
-        current === "light"
-            ? "dark"
-            : "light";
-
-    S.set("theme", next);
-
-    applyTheme(next);
-
-    updateThemeToggle();
-}
+//     document.documentElement.style.colorScheme =
+//         resolved === "light"
+//             ? "light"
+//             : resolved === "dark"
+//                 ? "dark"
+//                 : "light";
+// }
 
 
-function updateThemeToggle() {
-    const button = document.getElementById("themeToggle");
+// function toggleTheme() {
+//     const current = S.get("theme", "system");
 
-    if (!button) return;
+//     const next =
+//         current === "light"
+//             ? "dark"
+//             : "light";
 
-    const current = S.get("theme", "system");
+//     S.set("theme", next);
 
-    if (current === "light") {
-        button.innerHTML = "☀️";
-    } 
-    else {
-        button.innerHTML = "🌙";
-    }
-}
+//     applyTheme(next);
+
+//     updateThemeToggle();
+// }
 
 
-applyTheme(S.get("theme", "system"));
+// function updateThemeToggle() {
+//     const button = document.getElementById("themeToggle");
+
+//     if (!button) return;
+
+//     const current = S.get("theme", "system");
+
+//     if (current === "light") {
+//         button.innerHTML = "☀️";
+//     } 
+//     else {
+//         button.innerHTML = "🌙";
+//     }
+// }
+
+
+// applyTheme(S.get("theme", "system"));
 
 
 /* =========================================================
