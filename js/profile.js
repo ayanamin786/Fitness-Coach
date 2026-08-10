@@ -583,8 +583,8 @@ function setProfileButtonToChange() {
 
 
     button.innerHTML = `
-        <i class="bi bi-camera-fill"></i>
-        <span>Change Profile Pic</span>
+        <i style="color:black;" class="bi bi-camera-fill"></i>
+        <span style="color:black;" >Change Profile Pic</span>
     `;
 
 }
