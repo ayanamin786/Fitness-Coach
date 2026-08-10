@@ -590,3 +590,138 @@ html[data-theme="dark"] .profile-online-dot {
 }
 
 
+/* =========================================
+   MOBILE SIDEBAR FIX
+========================================= */
+
+.mobile-sidebar-overlay {
+    display: none;
+}
+
+@media (max-width: 991px) {
+
+    .sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+
+        width: 280px;
+        height: 100vh;
+
+        padding: 28px 18px;
+
+        background: var(--surface);
+
+        transform: translateX(-110%);
+        transition: transform .35s cubic-bezier(.22, 1, .36, 1);
+
+        z-index: 99999 !important;
+
+        overflow-y: auto;
+    }
+
+    .sidebar.sidebar-open {
+        transform: translateX(0) !important;
+    }
+
+    .mobile-menu-btn {
+        display: grid !important;
+        place-items: center;
+
+        width: 44px;
+        height: 44px;
+
+        flex-shrink: 0;
+
+        border: 1px solid var(--line);
+        border-radius: 12px;
+
+        background: var(--surface);
+        color: var(--text);
+
+        cursor: pointer;
+
+        font-size: 20px;
+
+        z-index: 100001;
+    }
+
+    .mobile-brand {
+        display: block !important;
+        margin-left: 12px;
+    }
+
+    .topbar {
+        position: sticky;
+        top: 0;
+
+        z-index: 10000;
+
+        display: flex;
+    }
+
+    /* Overlay */
+
+    .mobile-sidebar-overlay {
+        display: block;
+
+        position: fixed;
+        inset: 0;
+
+        background: rgba(0, 0, 0, .45);
+
+        backdrop-filter: blur(3px);
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition:
+            opacity .3s ease,
+            visibility .3s ease;
+
+        z-index: 99998;
+    }
+
+    .mobile-sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    body.sidebar-menu-open {
+        overflow: hidden;
+    }
+
+    .main {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .sidebar {
+        width: 285px;
+    }
+
+    .mobile-menu-btn {
+        width: 42px;
+        height: 42px;
+    }
+
+    .mobile-brand {
+        font-size: 11px;
+    }
+
+    .topbar {
+        padding: 0 15px;
+    }
+
+    .top-actions {
+        gap: 6px;
+    }
+}

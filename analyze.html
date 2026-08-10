@@ -1,0 +1,4410 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Fitness Coach — Body Analysis</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./css/style.css">
+    
+
+    <style>
+        /* =========================================================
+           ANALYZE PAGE
+        ========================================================= */
+
+        :root {
+            --bg: #f7f8fc;
+            --surface: #ffffff;
+            --surface2: #f1f4fa;
+            --text: #14213d;
+            --muted: #65728a;
+            --line: rgba(20,33,61,.10);
+
+            --primary: #1e4b9d;
+            --primary2: #2c66c7;
+
+            --success: #24a148;
+            --danger: #d9485f;
+
+            --shadow: 0 20px 60px rgba(20,33,61,.08);
+        }
+
+        html[data-theme="dark"] {
+            --bg: #070a0f;
+            --surface: #0d1117;
+            --surface2: #111820;
+            --text: #f8fafc;
+            --muted: #8b96a5;
+            --line: rgba(255,255,255,.08);
+
+            --primary: #b7ff3c;
+            --primary2: #7dff5b;
+
+            --success: #52d273;
+            --danger: #ff5c5c;
+
+            --shadow: 0 20px 60px rgba(0,0,0,.30);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            transition:
+                background-color .25s ease,
+                color .25s ease;
+        }
+
+        body.sidebar-menu-open {
+            overflow: hidden;
+        }
+
+        /* =========================================================
+           APP
+        ========================================================= */
+
+        .app-shell {
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            width: 248px;
+            height: 100vh;
+
+            background: var(--surface);
+
+            border-right: 1px solid var(--line);
+
+            padding: 28px 18px;
+
+            display: flex;
+            flex-direction: column;
+
+            z-index: 10001;
+
+            overflow-y: auto;
+
+            transition:
+                transform .3s cubic-bezier(.22,1,.36,1),
+                background-color .25s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-weight: 900;
+            font-size: 14px;
+
+            letter-spacing: 1px;
+            line-height: .95;
+
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .brand small {
+            display: block;
+
+            font-size: 8px;
+            color: var(--muted);
+
+            letter-spacing: 2px;
+
+            margin-top: 5px;
+        }
+
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary2)
+                );
+
+            color:
+                #ffffff;
+
+            font-size: 22px;
+
+            flex-shrink: 0;
+        }
+
+        .side-label {
+            font-size: 9px;
+
+            color: var(--muted);
+
+            letter-spacing: 2px;
+
+            margin: 40px 10px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px;
+
+            margin: 3px 0;
+
+            border-radius: 10px;
+
+            text-decoration: none;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            transition: .2s ease;
+        }
+
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+
+            background:
+                color-mix(
+                    in srgb,
+                    var(--primary) 9%,
+                    transparent
+                );
+
+            box-shadow:
+                inset 3px 0 var(--primary);
+        }
+
+        /* =========================================================
+           USER
+        ========================================================= */
+
+        .side-bottom {
+            margin-top: auto;
+        }
+
+        .mini-user {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px;
+        }
+
+        .mini-user b {
+            display: block;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .mini-user small {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .avatar,
+        .top-avatar {
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary2)
+                );
+
+            color: #fff;
+
+            font-weight: 900;
+
+            overflow: hidden;
+
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+        }
+
+        .avatar img,
+        .top-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .logout-btn {
+            width: 100%;
+
+            margin-top: 10px;
+
+            padding: 10px 12px;
+
+            border-radius: 10px;
+
+            border: 1px solid var(--line);
+
+            background: transparent;
+
+            color: var(--muted);
+
+            cursor: pointer;
+
+            font-size: 11px;
+
+            transition: .2s;
+        }
+
+        .logout-btn:hover {
+            color: var(--danger);
+            border-color: rgba(217,72,95,.25);
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main {
+            margin-left: 248px;
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================= */
+
+        .topbar {
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 5%;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 9000;
+
+            background:
+                color-mix(
+                    in srgb,
+                    var(--surface) 88%,
+                    transparent
+                );
+
+            backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid var(--line);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+
+            width: 44px;
+            height: 44px;
+
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid var(--line);
+
+            border-radius: 12px;
+
+            background: var(--surface);
+
+            color: var(--text);
+
+            cursor: pointer;
+
+            font-size: 20px;
+
+            position: relative;
+
+            z-index: 10003;
+        }
+
+        .mobile-menu-btn:hover {
+            color: var(--primary);
+        }
+
+        .mobile-brand {
+            display: none;
+
+            margin-left: 12px;
+
+            font-weight: 900;
+            font-size: 12px;
+
+            color: var(--text);
+        }
+
+        .top-actions {
+            margin-left: auto;
+
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #31c56a;
+
+            box-shadow:
+                0 0 12px #31c56a;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+
+            border: 0;
+
+            border-radius: 10px;
+
+            background: transparent;
+
+            color: var(--muted);
+
+            cursor: pointer;
+
+            font-size: 17px;
+
+            display: grid;
+            place-items: center;
+        }
+
+        .icon-btn:hover {
+            background: var(--surface2);
+            color: var(--primary);
+        }
+
+        .top-avatar {
+            width: 36px;
+            height: 36px;
+
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           OVERLAY
+        ========================================================= */
+
+        .mobile-sidebar-overlay {
+            display: none;
+        }
+
+        /* =========================================================
+           PAGE
+        ========================================================= */
+
+        .page {
+            max-width: 1450px;
+
+            margin: auto;
+
+            padding:
+                65px 6% 100px;
+        }
+
+        /* =========================================================
+           HEADING
+        ========================================================= */
+
+        .page-heading {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-end;
+
+            gap: 30px;
+
+            margin-bottom: 55px;
+        }
+
+        .eyebrow {
+            color: var(--muted);
+
+            font-size: 9px;
+
+            font-weight: 900;
+
+            letter-spacing: 2.5px;
+        }
+
+        .eyebrow span {
+            color: var(--primary);
+            margin-left: 8px;
+        }
+
+        .page-heading h1 {
+            margin: 18px 0 14px;
+
+            font-size:
+                clamp(42px, 6vw, 75px);
+
+            line-height: .92;
+
+            letter-spacing: -4px;
+
+            font-weight: 950;
+        }
+
+        .page-heading h1 em {
+            color: var(--primary);
+            font-style: normal;
+        }
+
+        .page-heading p {
+            max-width: 650px;
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            line-height: 1.8;
+        }
+
+        /* =========================================================
+           STATUS
+        ========================================================= */
+
+        .scan-status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 14px 18px;
+
+            background: var(--surface);
+
+            border: 1px solid var(--line);
+
+            border-radius: 14px;
+
+            box-shadow: var(--shadow);
+
+            min-width: 245px;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            color: var(--success);
+
+            background:
+                color-mix(
+                    in srgb,
+                    var(--success) 10%,
+                    transparent
+                );
+
+            font-size: 20px;
+        }
+
+        .scan-status strong {
+            display: block;
+            font-size: 11px;
+        }
+
+        .scan-status span {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 9px;
+
+            margin-top: 3px;
+        }
+
+        /* =========================================================
+           SECTION
+        ========================================================= */
+
+        .section-title {
+            display: flex;
+
+            align-items: flex-end;
+
+            justify-content: space-between;
+
+            margin-bottom: 22px;
+        }
+
+        .section-title > div {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title > div > span {
+            color: var(--primary);
+
+            font-size: 10px;
+
+            font-weight: 900;
+
+            letter-spacing: 2px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+
+            font-size: 25px;
+
+            letter-spacing: -1px;
+        }
+
+        .section-title p {
+            color: var(--muted);
+
+            font-size: 10px;
+
+            margin: 0;
+        }
+
+        /* =========================================================
+           UPLOAD GRID
+        ========================================================= */
+
+        .upload-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0,1fr));
+
+            gap: 15px;
+
+            margin-bottom: 65px;
+        }
+
+        .upload-card {
+            min-width: 0;
+        }
+
+        .upload-zone {
+            height: 310px;
+
+            position: relative;
+
+            border:
+                1px dashed
+                color-mix(
+                    in srgb,
+                    var(--muted) 45%,
+                    transparent
+                );
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--surface),
+                    var(--surface2)
+                );
+
+            overflow: hidden;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragging {
+            border-color: var(--primary);
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 18px 45px
+                color-mix(
+                    in srgb,
+                    var(--primary) 12%,
+                    transparent
+                );
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            gap: 9px;
+
+            color: var(--muted);
+
+            padding: 20px;
+        }
+
+        .image-preview strong {
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .image-preview span {
+            font-size: 9px;
+        }
+
+        .upload-icon {
+            width: 65px;
+            height: 65px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 18px;
+
+            background:
+                color-mix(
+                    in srgb,
+                    var(--primary) 9%,
+                    transparent
+                );
+
+            color: var(--primary);
+
+            font-size: 28px;
+
+            margin-bottom: 5px;
+        }
+
+        .upload-label {
+            position: absolute;
+
+            top: 12px;
+            left: 12px;
+
+            padding: 6px 9px;
+
+            border-radius: 99px;
+
+            background:
+                color-mix(
+                    in srgb,
+                    var(--surface) 90%,
+                    transparent
+                );
+
+            border: 1px solid var(--line);
+
+            color: var(--primary);
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+            letter-spacing: 1px;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+        }
+
+        .remove-image {
+            position: absolute;
+
+            top: 12px;
+            right: 12px;
+
+            width: 34px;
+            height: 34px;
+
+            border: 0;
+
+            border-radius: 10px;
+
+            background:
+                rgba(0,0,0,.65);
+
+            color: #fff;
+
+            cursor: pointer;
+
+            z-index: 3;
+        }
+
+        /* =========================================================
+           MEASUREMENTS
+        ========================================================= */
+
+        .measurements-title {
+            margin-bottom: 20px;
+        }
+
+        .measurement-card {
+            background: var(--surface);
+
+            border: 1px solid var(--line);
+
+            border-radius: 20px;
+
+            padding: 28px;
+
+            box-shadow: var(--shadow);
+
+            margin-bottom: 65px;
+        }
+
+        .input-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4,minmax(0,1fr));
+
+            gap: 15px;
+        }
+
+        .input-group label,
+        .activity-section label {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 8px;
+        }
+
+        .input-group label i,
+        .activity-section label i {
+            color: var(--primary);
+
+            margin-right: 5px;
+        }
+
+        .input-box {
+            display: flex;
+
+            align-items: center;
+
+            height: 50px;
+
+            border: 1px solid var(--line);
+
+            border-radius: 11px;
+
+            background: var(--surface2);
+
+            overflow: hidden;
+        }
+
+        .input-box input {
+            flex: 1;
+
+            min-width: 0;
+
+            height: 100%;
+
+            padding: 0 14px;
+
+            border: 0;
+
+            outline: 0;
+
+            background: transparent;
+
+            color: var(--text);
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+        .input-box span {
+            padding-right: 13px;
+
+            color: var(--muted);
+
+            font-size: 8px;
+
+            font-weight: 900;
+        }
+
+        select {
+            width: 100%;
+
+            height: 50px;
+
+            padding: 0 14px;
+
+            border-radius: 11px;
+
+            border: 1px solid var(--line);
+
+            background: var(--surface2);
+
+            color: var(--text);
+
+            outline: 0;
+
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           ACTIVITY
+        ========================================================= */
+
+        .activity-section {
+            margin-top: 28px;
+        }
+
+        .activity-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4,minmax(0,1fr));
+
+            gap: 10px;
+        }
+
+        .activity-btn {
+            text-align: left;
+
+            padding: 15px;
+
+            border: 1px solid var(--line);
+
+            border-radius: 12px;
+
+            background: var(--surface);
+
+            color: var(--text);
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .activity-btn strong {
+            display: block;
+
+            color: var(--text);
+
+            font-size: 11px;
+        }
+
+        .activity-btn span {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 8px;
+
+            margin-top: 4px;
+        }
+
+        .activity-btn:hover,
+        .activity-btn.active {
+            background:
+                color-mix(
+                    in srgb,
+                    var(--primary) 9%,
+                    transparent
+                );
+
+            border-color: var(--primary);
+
+            box-shadow:
+                inset 0 0 0 1px var(--primary);
+        }
+
+        .activity-btn.active strong {
+            color: var(--primary);
+        }
+
+        /* =========================================================
+           ANALYZE BUTTON
+        ========================================================= */
+
+        .analyze-btn {
+            width: 100%;
+
+            margin-top: 28px;
+
+            height: 56px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 20px;
+
+            border: 0;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary2)
+                );
+
+            color:
+                #ffffff;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: 900;
+
+            box-shadow:
+                0 15px 30px
+                color-mix(
+                    in srgb,
+                    var(--primary) 22%,
+                    transparent
+                );
+
+            transition: .2s;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .analyze-btn:disabled {
+            opacity: .65;
+            cursor: wait;
+            transform: none;
+        }
+
+        .analyze-btn span {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+        }
+
+        /* =========================================================
+           RESULTS
+        ========================================================= */
+
+        .results-section {
+            display: none;
+
+            animation:
+                resultsIn .5s ease;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        @keyframes resultsIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-heading {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-end;
+
+            margin-bottom: 20px;
+        }
+
+        .result-heading h2 {
+            margin: 8px 0 0;
+
+            font-size: 30px;
+
+            letter-spacing: -1.5px;
+        }
+
+        .result-badge {
+            padding: 8px 11px;
+
+            border-radius: 99px;
+
+            background:
+                color-mix(
+                    in srgb,
+                    var(--success) 10%,
+                    transparent
+                );
+
+            color: var(--success);
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+            letter-spacing: 1px;
+        }
+
+        .result-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4,minmax(0,1fr));
+
+            gap: 14px;
+        }
+
+        .result-card {
+            min-height: 190px;
+
+            padding: 22px;
+
+            background: var(--surface);
+
+            border: 1px solid var(--line);
+
+            border-radius: 17px;
+
+            box-shadow: var(--shadow);
+        }
+
+        .result-card.featured {
+            background:
+                linear-gradient(
+                    145deg,
+                    #173c7b,
+                    #1e4b9d
+                );
+
+            color: white;
+
+            border: 0;
+        }
+
+        html[data-theme="dark"] .result-card.featured {
+            background:
+                linear-gradient(
+                    145deg,
+                    #182a1a,
+                    #223c21
+                );
+        }
+
+        .result-icon {
+            width: 38px;
+            height: 38px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            background:
+                color-mix(
+                    in srgb,
+                    var(--primary) 9%,
+                    transparent
+                );
+
+            color: var(--primary);
+
+            font-size: 17px;
+
+            margin-bottom: 18px;
+        }
+
+        .featured .result-icon {
+            background: rgba(255,255,255,.13);
+            color: white;
+        }
+
+        .result-card > span {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 8px;
+
+            letter-spacing: 1.5px;
+
+            font-weight: 900;
+        }
+
+        .featured > span {
+            color: rgba(255,255,255,.65);
+        }
+
+        .result-card > strong {
+            display: block;
+
+            margin: 8px 0;
+
+            font-size: 38px;
+
+            letter-spacing: -2px;
+        }
+
+        .result-card > strong small {
+            font-size: 10px;
+
+            letter-spacing: 0;
+
+            color: var(--muted);
+        }
+
+        .featured > strong {
+            color: white;
+        }
+
+        .result-card > p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 9px;
+
+            line-height: 1.6;
+        }
+
+        .featured > small {
+            color: #dce8ff;
+        }
+
+        .result-progress {
+            height: 5px;
+
+            background: rgba(255,255,255,.16);
+
+            border-radius: 10px;
+
+            margin-top: 17px;
+
+            overflow: hidden;
+        }
+
+        .result-progress i {
+            display: block;
+
+            width: 0%;
+
+            height: 100%;
+
+            background: white;
+
+            border-radius: 10px;
+
+            transition:
+                width .8s ease;
+        }
+
+        /* =========================================================
+           EXTRA BODY METRICS
+        ========================================================= */
+
+        .extra-results {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3,minmax(0,1fr));
+
+            gap: 14px;
+
+            margin-top: 14px;
+        }
+
+        .extra-card {
+            padding: 20px;
+
+            background: var(--surface);
+
+            border: 1px solid var(--line);
+
+            border-radius: 16px;
+        }
+
+        .extra-card span {
+            color: var(--muted);
+
+            display: block;
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.4px;
+        }
+
+        .extra-card strong {
+            display: block;
+
+            font-size: 24px;
+
+            margin-top: 7px;
+        }
+
+        /* =========================================================
+           AI INSIGHT
+        ========================================================= */
+
+        .ai-insight {
+            display: flex;
+
+            gap: 18px;
+
+            align-items: flex-start;
+
+            margin-top: 15px;
+
+            padding: 25px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    color-mix(
+                        in srgb,
+                        var(--primary) 7%,
+                        var(--surface)
+                    ),
+                    var(--surface)
+                );
+
+            border: 1px solid var(--line);
+
+            border-radius: 17px;
+        }
+
+        .ai-icon {
+            width: 48px;
+            height: 48px;
+
+            flex-shrink: 0;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 14px;
+
+            background: var(--primary);
+
+            color: white;
+
+            font-size: 22px;
+        }
+
+        .ai-insight span {
+            color: var(--primary);
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.5px;
+        }
+
+        .ai-insight h3 {
+            margin: 7px 0;
+
+            font-size: 15px;
+        }
+
+        .ai-insight p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.7;
+        }
+
+        .disclaimer {
+            display: flex;
+
+            gap: 8px;
+
+            align-items: flex-start;
+
+            margin-top: 14px;
+
+            color: var(--muted);
+
+            font-size: 8px;
+
+            line-height: 1.6;
+        }
+
+        .disclaimer i {
+            color: var(--primary);
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           TABLET
+        ========================================================= */
+
+        @media (max-width: 1100px) {
+
+            .upload-grid {
+                grid-template-columns:
+                    repeat(2,minmax(0,1fr));
+            }
+
+            .input-grid {
+                grid-template-columns:
+                    repeat(2,minmax(0,1fr));
+            }
+
+            .activity-grid {
+                grid-template-columns:
+                    repeat(2,minmax(0,1fr));
+            }
+
+            .result-grid {
+                grid-template-columns:
+                    repeat(2,minmax(0,1fr));
+            }
+        }
+
+        /* =========================================================
+           MOBILE SIDEBAR
+        ========================================================= */
+
+        @media (max-width: 991px) {
+
+            .sidebar {
+                width: 280px;
+
+                transform:
+                    translateX(-110%);
+
+                box-shadow:
+                    20px 0 60px rgba(0,0,0,.20);
+            }
+
+            .sidebar.sidebar-open {
+                transform:
+                    translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .mobile-brand {
+                display: block;
+            }
+
+            .mobile-sidebar-overlay {
+                position: fixed;
+
+                inset: 0;
+
+                display: block;
+
+                background:
+                    rgba(0,0,0,.45);
+
+                backdrop-filter: blur(3px);
+
+                opacity: 0;
+
+                visibility: hidden;
+
+                pointer-events: none;
+
+                z-index: 10000;
+
+                transition:
+                    opacity .3s ease,
+                    visibility .3s ease;
+            }
+
+            body.sidebar-menu-open
+            .mobile-sidebar-overlay {
+                opacity: 1;
+
+                visibility: visible;
+
+                pointer-events: auto;
+            }
+
+            .topbar {
+                z-index: 10002;
+            }
+
+            .page-heading {
+                display: block;
+            }
+
+            .scan-status {
+                margin-top: 25px;
+            }
+
+            .page {
+                padding:
+                    50px 5% 80px;
+            }
+        }
+
+        /* =========================================================
+           SMALL MOBILE
+        ========================================================= */
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .mobile-brand {
+                font-size: 10px;
+            }
+
+            .top-actions {
+                gap: 7px;
+            }
+
+            .online-text {
+                display: none;
+            }
+
+            .top-avatar {
+                width: 34px;
+                height: 34px;
+            }
+
+            .page {
+                padding:
+                    42px 18px 70px;
+            }
+
+            .page-heading h1 {
+                font-size: 45px;
+                letter-spacing: -2px;
+            }
+
+            .section-title {
+                display: block;
+            }
+
+            .section-title p {
+                margin-top: 8px;
+            }
+
+            .upload-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-zone {
+                height: 260px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .activity-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .extra-results {
+                grid-template-columns: 1fr;
+            }
+
+            .measurement-card {
+                padding: 18px;
+            }
+
+            .result-heading {
+                display: block;
+            }
+
+            .result-badge {
+                display: inline-block;
+
+                margin-top: 12px;
+            }
+
+            .ai-insight {
+                padding: 18px;
+            }
+
+            .ai-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- =====================================================
+         MOBILE OVERLAY
+    ====================================================== -->
+
+  <div
+    class="mobile-sidebar-overlay"
+    id="mobileSidebarOverlay"
+></div>
+
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
+
+<aside id="mainSidebar" class="sidebar">
+
+    <div class="brand">
+
+        <span class="brand-mark">
+            ✦
+        </span>
+
+        <span>
+            AI FITNESS
+            <br>
+            <small>COACH</small>
+        </span>
+
+    </div>
+
+
+    <div class="side-label">
+        WORKSPACE
+    </div>
+
+
+    <nav>
+
+        <a
+            class="nav-item"
+            href="dashboard.html"
+        >
+            <i class="bi bi-grid-1x2-fill"></i>
+            Overview
+        </a>
+
+        
+
+         <a  
+         class="nav-item"
+            href="analyze.html"
+        >
+            <i class="bi bi-check2-circle"></i>
+            Analyze Your Body
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="bmi.html"
+        >
+            <i class="bi bi-activity"></i>
+            BMI
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="calories.html"
+        >
+            <i class="bi bi-fire"></i>
+            Calories
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="workout.html"
+        >
+            <i class="bi bi-lightning-charge-fill"></i>
+            Workout
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="nutrition.html"
+        >
+            <i class="bi bi-egg-fried"></i>
+            Nutrition
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="habits.html"
+        >
+            <i class="bi bi-check2-circle"></i>
+            Habits
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="progress.html"
+        >
+            <i class="bi bi-bar-chart-fill"></i>
+            Progress
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="coach.html"
+        >
+            <i class="bi bi-stars"></i>
+            AI Coach
+        </a>
+
+    </nav>
+
+
+    <div class="side-bottom">
+
+       
+<div class="side-bottom"><div class="mini-user">
+    <img
+        class="avatar profile-avatar"
+        src="default-avatar.png"
+        alt="Profile"
+    >
+
+
+        <button
+            id="logoutBtn"
+            class="ghost-btn w-100"
+        >
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<main class="main">
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+        <header class="topbar">
+
+            <button
+                id="mobileMenuBtn"
+                class="mobile-menu-btn"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-controls="mainSidebar"
+                aria-expanded="false"
+            >
+                <i class="bi bi-list"></i>
+            </button>
+
+
+            <div class="mobile-brand">
+                ✦ AI FITNESS COACH
+            </div>
+
+
+            <div class="top-actions">
+
+                <span class="live-dot"></span>
+
+                <span class="online-text">
+                    Coach system online
+                </span>
+
+
+                <button
+                    id="themeToggle"
+                    class="icon-btn"
+                    type="button"
+                    aria-label="Toggle theme"
+                >
+                    <i class="bi bi-circle-half"></i>
+                </button>
+
+
+                <button
+                    class="icon-btn"
+                    type="button"
+                    aria-label="Notifications"
+                >
+                    <i class="bi bi-bell"></i>
+                </button>
+
+
+           <img
+    class="avatar profile-avatar"
+    src="default-avatar.png"
+    alt="Profile"
+>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             PAGE
+        ================================================== -->
+
+        <section class="page">
+
+
+            <!-- HERO -->
+
+            <div class="page-heading">
+
+                <div>
+
+                    <div class="eyebrow">
+                        AI BODY ANALYSIS
+                        <span>● SMART SCAN</span>
+                    </div>
+
+                    <h1>
+                        Understand your
+                        <em>body.</em>
+                    </h1>
+
+                    <p>
+                        Upload four body-view photos and enter your
+                        measurements to generate your estimated BMI,
+                        BMR, daily calories, ideal weight and fitness
+                        insights.
+                    </p>
+
+                </div>
+
+
+                <div class="scan-status">
+
+                    <div class="status-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+
+                    <div>
+                        <strong>
+                            Private Analysis
+                        </strong>
+
+                        <span>
+                            Photos stay on this device.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PHOTO UPLOAD
+            ================================================== -->
+
+            <div class="section-title">
+
+                <div>
+                    <span>01</span>
+
+                    <h2>
+                        Body Photos
+                    </h2>
+                </div>
+
+                <p>
+                    Front, back, left & right
+                </p>
+
+            </div>
+
+
+            <div class="upload-grid">
+
+
+                <!-- FRONT -->
+
+                <div class="upload-card">
+
+                    <input
+                        type="file"
+                        id="frontInput"
+                        accept="image/*"
+                        hidden
+                    >
+
+                    <div
+                        class="upload-zone"
+                        id="frontZone"
+                        data-input="frontInput"
+                    >
+
+                        <div
+                            class="image-preview"
+                            id="frontPreview"
+                        >
+
+                            <div class="upload-icon">
+                                <i class="bi bi-person-standing"></i>
+                            </div>
+
+                            <strong>
+                                Front View
+                            </strong>
+
+                            <span>
+                                Click or drop image here
+                            </span>
+
+                        </div>
+
+                        <div class="upload-label">
+                            <i class="bi bi-camera"></i>
+                            FRONT
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BACK -->
+
+                <div class="upload-card">
+
+                    <input
+                        type="file"
+                        id="backInput"
+                        accept="image/*"
+                        hidden
+                    >
+
+                    <div
+                        class="upload-zone"
+                        id="backZone"
+                        data-input="backInput"
+                    >
+
+                        <div
+                            class="image-preview"
+                            id="backPreview"
+                        >
+
+                            <div class="upload-icon">
+                                <i class="bi bi-person-standing"></i>
+                            </div>
+
+                            <strong>
+                                Back View
+                            </strong>
+
+                            <span>
+                                Click or drop image here
+                            </span>
+
+                        </div>
+
+                        <div class="upload-label">
+                            <i class="bi bi-camera"></i>
+                            BACK
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LEFT -->
+
+                <div class="upload-card">
+
+                    <input
+                        type="file"
+                        id="leftInput"
+                        accept="image/*"
+                        hidden
+                    >
+
+                    <div
+                        class="upload-zone"
+                        id="leftZone"
+                        data-input="leftInput"
+                    >
+
+                        <div
+                            class="image-preview"
+                            id="leftPreview"
+                        >
+
+                            <div class="upload-icon">
+                                <i class="bi bi-person-standing"></i>
+                            </div>
+
+                            <strong>
+                                Left View
+                            </strong>
+
+                            <span>
+                                Click or drop image here
+                            </span>
+
+                        </div>
+
+                        <div class="upload-label">
+                            <i class="bi bi-camera"></i>
+                            LEFT
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RIGHT -->
+
+                <div class="upload-card">
+
+                    <input
+                        type="file"
+                        id="rightInput"
+                        accept="image/*"
+                        hidden
+                    >
+
+                    <div
+                        class="upload-zone"
+                        id="rightZone"
+                        data-input="rightInput"
+                    >
+
+                        <div
+                            class="image-preview"
+                            id="rightPreview"
+                        >
+
+                            <div class="upload-icon">
+                                <i class="bi bi-person-standing"></i>
+                            </div>
+
+                            <strong>
+                                Right View
+                            </strong>
+
+                            <span>
+                                Click or drop image here
+                            </span>
+
+                        </div>
+
+                        <div class="upload-label">
+                            <i class="bi bi-camera"></i>
+                            RIGHT
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 MEASUREMENTS
+            ================================================== -->
+
+            <div class="section-title measurements-title">
+
+                <div>
+
+                    <span>02</span>
+
+                    <h2>
+                        Your Measurements
+                    </h2>
+
+                </div>
+
+                <p>
+                    Required for BMI & calories
+                </p>
+
+            </div>
+
+
+            <div class="measurement-card">
+
+
+                <div class="input-grid">
+
+
+                    <!-- WEIGHT -->
+
+                    <div class="input-group">
+
+                        <label>
+                            <i class="bi bi-speedometer2"></i>
+                            Weight
+                        </label>
+
+                        <div class="input-box">
+
+                            <input
+                                id="weight"
+                                type="number"
+                                min="1"
+                                max="500"
+                                step="0.1"
+                                placeholder="70"
+                            >
+
+                            <span>
+                                KG
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- HEIGHT -->
+
+                    <div class="input-group">
+
+                        <label>
+                            <i class="bi bi-rulers"></i>
+                            Height
+                        </label>
+
+                        <div class="input-box">
+
+                            <input
+                                id="height"
+                                type="number"
+                                min="50"
+                                max="250"
+                                step="0.1"
+                                placeholder="175"
+                            >
+
+                            <span>
+                                CM
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- AGE -->
+
+                    <div class="input-group">
+
+                        <label>
+                            <i class="bi bi-calendar3"></i>
+                            Age
+                        </label>
+
+                        <div class="input-box">
+
+                            <input
+                                id="age"
+                                type="number"
+                                min="10"
+                                max="100"
+                                placeholder="18"
+                            >
+
+                            <span>
+                                YRS
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- GENDER -->
+
+                    <div class="input-group">
+
+                        <label>
+                            <i class="bi bi-person"></i>
+                            Gender
+                        </label>
+
+                        <select id="gender">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="male">
+                                Male
+                            </option>
+
+                            <option value="female">
+                                Female
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIVITY -->
+
+                <div class="activity-section">
+
+                    <label>
+                        <i class="bi bi-lightning-charge"></i>
+                        Daily Activity Level
+                    </label>
+
+
+                    <div class="activity-grid">
+
+                        <button
+                            type="button"
+                            class="activity-btn active"
+                            data-value="1.2"
+                        >
+                            <strong>
+                                Low
+                            </strong>
+
+                            <span>
+                                Little exercise
+                            </span>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="activity-btn"
+                            data-value="1.375"
+                        >
+                            <strong>
+                                Light
+                            </strong>
+
+                            <span>
+                                1–3 days/week
+                            </span>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="activity-btn"
+                            data-value="1.55"
+                        >
+                            <strong>
+                                Moderate
+                            </strong>
+
+                            <span>
+                                3–5 days/week
+                            </span>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="activity-btn"
+                            data-value="1.725"
+                        >
+                            <strong>
+                                High
+                            </strong>
+
+                            <span>
+                                6–7 days/week
+                            </span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ANALYZE -->
+
+                <button
+                    id="analyzeBtn"
+                    class="analyze-btn"
+                    type="button"
+                >
+
+                    <span>
+                        <i class="bi bi-stars"></i>
+
+                        Analyze My Body
+                    </span>
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 RESULTS
+            ================================================== -->
+
+            <section
+                id="results"
+                class="results-section"
+            >
+
+                <div class="result-heading">
+
+                    <div>
+
+                        <div class="eyebrow">
+                            ANALYSIS COMPLETE
+                        </div>
+
+                        <h2>
+                            Your Fitness Profile
+                        </h2>
+
+                    </div>
+
+                    <div class="result-badge">
+                        <i class="bi bi-check-circle-fill"></i>
+                        READY
+                    </div>
+
+                </div>
+
+
+                <div class="result-grid">
+
+
+                    <!-- BMI -->
+
+                    <div class="result-card featured">
+
+                        <div class="result-icon">
+                            <i class="bi bi-speedometer2"></i>
+                        </div>
+
+                        <span>
+                            BMI SCORE
+                        </span>
+
+                        <strong id="bmiResult">
+                            --
+                        </strong>
+
+                        <small id="bmiStatus">
+                            Enter your details
+                        </small>
+
+                        <div class="result-progress">
+                            <i id="bmiProgress"></i>
+                        </div>
+
+                    </div>
+
+
+                    <!-- BMR -->
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            <i class="bi bi-fire"></i>
+                        </div>
+
+                        <span>
+                            BMR
+                        </span>
+
+                        <strong>
+                            <b id="bmrResult">
+                                --
+                            </b>
+
+                            <small>
+                                kcal
+                            </small>
+                        </strong>
+
+                        <p>
+                            Estimated calories your body
+                            uses at rest.
+                        </p>
+
+                    </div>
+
+
+                    <!-- CALORIES -->
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+
+                        <span>
+                            DAILY CALORIES
+                        </span>
+
+                        <strong>
+                            <b id="calorieResult">
+                                --
+                            </b>
+
+                            <small>
+                                kcal
+                            </small>
+                        </strong>
+
+                        <p>
+                            Estimated maintenance calories.
+                        </p>
+
+                    </div>
+
+
+                    <!-- IDEAL WEIGHT -->
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            <i class="bi bi-bullseye"></i>
+                        </div>
+
+                        <span>
+                            IDEAL WEIGHT
+                        </span>
+
+                        <strong>
+                            <b id="idealWeight">
+                                --
+                            </b>
+
+                            <small>
+                                kg
+                            </small>
+                        </strong>
+
+                        <p>
+                            Approximate BMI-based range.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EXTRA RESULTS -->
+
+                <div class="extra-results">
+
+                    <div class="extra-card">
+
+                        <span>
+                            BODY MASS
+                        </span>
+
+                        <strong id="weightResult">
+                            -- kg
+                        </strong>
+
+                    </div>
+
+
+                    <div class="extra-card">
+
+                        <span>
+                            HEIGHT
+                        </span>
+
+                        <strong id="heightResult">
+                            -- cm
+                        </strong>
+
+                    </div>
+
+
+                    <div class="extra-card">
+
+                        <span>
+                            FITNESS CATEGORY
+                        </span>
+
+                        <strong id="fitnessCategory">
+                            --
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AI INSIGHT -->
+
+                <div class="ai-insight">
+
+                    <div class="ai-icon">
+                        <i class="bi bi-robot"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            AI FITNESS INSIGHT
+                        </span>
+
+                        <h3 id="aiTitle">
+                            Your personalized insight
+                        </h3>
+
+                        <p id="aiText">
+                            Complete your analysis to receive
+                            personalized fitness guidance.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="disclaimer">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        BMI, BMR and calorie values are estimates
+                        and are not medical diagnoses. Photo uploads
+                        are stored locally by this prototype and are
+                        not used here to make an exact body-fat or
+                        medical assessment.
+                    </span>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+   <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyBsUF58u3v36RUfmHuP_65HPFIpkuEUVXA",
+  authDomain: "fitness-coach-e2ca6.firebaseapp.com",
+  databaseURL: "https://fitness-coach-e2ca6-default-rtdb.firebaseio.com",
+  projectId: "fitness-coach-e2ca6",
+  storageBucket: "fitness-coach-e2ca6.firebasestorage.app",
+  messagingSenderId: "502727638349",
+  appId: "1:502727638349:web:5ea34535106811fc694b04"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+<script>
+
+    /* =========================================================
+       STORAGE
+    ========================================================= */
+
+    const S = {
+
+        get(key, fallback) {
+
+            try {
+
+                const value =
+                    localStorage.getItem(key);
+
+                return value === null
+                    ? fallback
+                    : JSON.parse(value);
+
+            } catch {
+
+                return fallback;
+
+            }
+
+        },
+
+        set(key, value) {
+
+            localStorage.setItem(
+                key,
+                JSON.stringify(value)
+            );
+
+        }
+
+    };
+
+
+    /* =========================================================
+       THEME
+       SAME STORAGE PATTERN AS DASHBOARD
+    ========================================================= */
+
+    function applyTheme(theme) {
+
+        const resolved =
+            theme ||
+            S.get("theme", "system");
+
+
+        if (resolved === "light") {
+
+            document.documentElement
+                .setAttribute(
+                    "data-theme",
+                    "light"
+                );
+
+        }
+
+        else if (resolved === "dark") {
+
+            document.documentElement
+                .setAttribute(
+                    "data-theme",
+                    "dark"
+                );
+
+        }
+
+        else {
+
+            document.documentElement
+                .removeAttribute(
+                    "data-theme"
+                );
+
+        }
+
+
+        document.documentElement.style.colorScheme =
+            resolved === "dark"
+                ? "dark"
+                : "light";
+
+    }
+
+
+    function toggleTheme() {
+
+        const current =
+            S.get(
+                "theme",
+                "system"
+            );
+
+
+        const next =
+            current === "light"
+                ? "dark"
+                : "light";
+
+
+        S.set(
+            "theme",
+            next
+        );
+
+
+        applyTheme(next);
+
+        updateThemeToggle();
+
+    }
+
+
+    function updateThemeToggle() {
+
+        const button =
+            document.getElementById(
+                "themeToggle"
+            );
+
+
+        if (!button) return;
+
+
+        const current =
+            S.get(
+                "theme",
+                "system"
+            );
+
+
+        if (current === "light") {
+
+            button.innerHTML =
+                '<i class="bi bi-sun-fill"></i>';
+
+        }
+
+        else if (current === "dark") {
+
+            button.innerHTML =
+                '<i class="bi bi-moon-fill"></i>';
+
+        }
+
+        else {
+
+            button.innerHTML =
+                '<i class="bi bi-circle-half"></i>';
+
+        }
+
+    }
+
+
+    applyTheme(
+        S.get(
+            "theme",
+            "system"
+        )
+    );
+
+
+    /* =========================================================
+       MOBILE SIDEBAR
+       IMPORTANT FIX
+    ========================================================= */
+
+    const mobileMenuBtn =
+        document.getElementById(
+            "mobileMenuBtn"
+        );
+
+    const mainSidebar =
+        document.getElementById(
+            "mainSidebar"
+        );
+
+    const mobileSidebarOverlay =
+        document.getElementById(
+            "mobileSidebarOverlay"
+        );
+
+
+    function openMobileSidebar() {
+
+        if (!mainSidebar) return;
+
+
+        mainSidebar.classList.add(
+            "sidebar-open"
+        );
+
+
+        document.body.classList.add(
+            "sidebar-menu-open"
+        );
+
+
+        if (mobileMenuBtn) {
+
+            mobileMenuBtn.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            mobileMenuBtn.setAttribute(
+                "aria-label",
+                "Close navigation menu"
+            );
+
+            mobileMenuBtn.innerHTML =
+                '<i class="bi bi-x-lg"></i>';
+
+        }
+
+    }
+
+
+    function closeMobileSidebar() {
+
+        if (!mainSidebar) return;
+
+
+        mainSidebar.classList.remove(
+            "sidebar-open"
+        );
+
+
+        document.body.classList.remove(
+            "sidebar-menu-open"
+        );
+
+
+        if (mobileMenuBtn) {
+
+            mobileMenuBtn.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            mobileMenuBtn.setAttribute(
+                "aria-label",
+                "Open navigation menu"
+            );
+
+            mobileMenuBtn.innerHTML =
+                '<i class="bi bi-list"></i>';
+
+        }
+
+    }
+
+
+    function toggleMobileSidebar() {
+
+        if (
+            mainSidebar.classList.contains(
+                "sidebar-open"
+            )
+        ) {
+
+            closeMobileSidebar();
+
+        }
+
+        else {
+
+            openMobileSidebar();
+
+        }
+
+    }
+
+
+    if (mobileMenuBtn) {
+
+        mobileMenuBtn.addEventListener(
+            "click",
+            function(event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                toggleMobileSidebar();
+
+            }
+        );
+
+    }
+
+
+    if (mobileSidebarOverlay) {
+
+        mobileSidebarOverlay.addEventListener(
+            "click",
+            closeMobileSidebar
+        );
+
+    }
+
+
+    /* Close after clicking a sidebar link */
+
+    document
+        .querySelectorAll(
+            ".sidebar .nav-item"
+        )
+        .forEach(function(link) {
+
+            link.addEventListener(
+                "click",
+                function() {
+
+                    closeMobileSidebar();
+
+                }
+            );
+
+        });
+
+
+    /* Escape closes menu */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closeMobileSidebar();
+
+            }
+
+        }
+    );
+
+
+    /* Resize safety */
+
+    window.addEventListener(
+        "resize",
+        function() {
+
+            if (
+                window.innerWidth > 991
+            ) {
+
+                closeMobileSidebar();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       PROFILE
+    ========================================================= */
+
+    /*function loadProfile() {
+
+        const user =
+            S.get(
+                "fitnessUser",
+                {}
+            );
+
+
+        const name =
+            user.name ||
+            user.displayName ||
+            S.get(
+                "userName",
+                "Ayan Amin"
+            );
+
+
+        const image =
+            user.photoURL ||
+            user.photo ||
+            user.profileImage ||
+            S.get(
+                "profileImage",
+                "default-avatar.png"
+            );
+
+
+        const sidebarName =
+            document.getElementById(
+                "sidebarName"
+            );
+
+
+        if (sidebarName) {
+
+            sidebarName.textContent =
+                name;
+
+        }
+
+
+        const sidebarImage =
+            document.getElementById(
+                "sidebarProfileImage"
+            );
+
+
+        if (sidebarImage && image) {
+
+            sidebarImage.src =
+                image;
+
+        }
+
+
+        const topImage =
+            document.getElementById(
+                "topProfileImage"
+            );
+
+
+        if (topImage && image) {
+
+            topImage.src =
+                image;
+
+        }
+
+    }
+
+
+    loadProfile();
+
+    */
+
+    /* =========================================================
+       ACTIVE NAV
+    ========================================================= */
+
+    document
+        .querySelectorAll(
+            ".nav-item"
+        )
+        .forEach(function(link) {
+
+            const href =
+                link.getAttribute(
+                    "href"
+                );
+
+            if (!href) return;
+
+
+            const current =
+                location.pathname
+                    .split("/")
+                    .pop()
+                    .toLowerCase();
+
+
+            const target =
+                href
+                    .split("/")
+                    .pop()
+                    .toLowerCase();
+
+
+            link.classList.toggle(
+                "active",
+                current === target
+            );
+
+        });
+
+
+    /* =========================================================
+       IMAGE UPLOAD SYSTEM
+    ========================================================= */
+
+    const uploadTypes = [
+        "front",
+        "back",
+        "left",
+        "right"
+    ];
+
+
+    function setupUpload(type) {
+
+        const input =
+            document.getElementById(
+                type + "Input"
+            );
+
+        const zone =
+            document.getElementById(
+                type + "Zone"
+            );
+
+        const preview =
+            document.getElementById(
+                type + "Preview"
+            );
+
+
+        if (!input || !zone || !preview) {
+            return;
+        }
+
+
+        zone.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target.closest(
+                        ".remove-image"
+                    )
+                ) {
+                    return;
+                }
+
+                input.click();
+
+            }
+        );
+
+
+        input.addEventListener(
+            "change",
+            function() {
+
+                if (
+                    this.files &&
+                    this.files[0]
+                ) {
+
+                    showImage(
+                        type,
+                        this.files[0]
+                    );
+
+                }
+
+            }
+        );
+
+
+        [
+            "dragenter",
+            "dragover"
+        ].forEach(function(eventName) {
+
+            zone.addEventListener(
+                eventName,
+                function(event) {
+
+                    event.preventDefault();
+
+                    zone.classList.add(
+                        "dragging"
+                    );
+
+                }
+            );
+
+        });
+
+
+        [
+            "dragleave",
+            "drop"
+        ].forEach(function(eventName) {
+
+            zone.addEventListener(
+                eventName,
+                function(event) {
+
+                    event.preventDefault();
+
+                    zone.classList.remove(
+                        "dragging"
+                    );
+
+                }
+            );
+
+        });
+
+
+        zone.addEventListener(
+            "drop",
+            function(event) {
+
+                const files =
+                    event.dataTransfer.files;
+
+
+                if (
+                    files &&
+                    files[0] &&
+                    files[0].type.startsWith(
+                        "image/"
+                    )
+                ) {
+
+                    showImage(
+                        type,
+                        files[0]
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    function showImage(
+        type,
+        file
+    ) {
+
+        if (
+            !file.type.startsWith(
+                "image/"
+            )
+        ) {
+            return;
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(event) {
+
+                const preview =
+                    document.getElementById(
+                        type + "Preview"
+                    );
+
+                if (!preview) return;
+
+
+                preview.innerHTML = `
+
+                    <img
+                        class="preview-image"
+                        src="${event.target.result}"
+                        alt="${type} body view"
+                    >
+
+                    <button
+                        type="button"
+                        class="remove-image"
+                        data-type="${type}"
+                        aria-label="Remove image"
+                    >
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+
+                `;
+
+
+                S.set(
+                    "bodyPhoto_" + type,
+                    event.target.result
+                );
+
+
+                const removeButton =
+                    preview.querySelector(
+                        ".remove-image"
+                    );
+
+
+                if (removeButton) {
+
+                    removeButton.addEventListener(
+                        "click",
+                        function(event) {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+                            removeImage(
+                                type
+                            );
+
+                        }
+                    );
+
+                }
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+    }
+
+
+    function removeImage(type) {
+
+        const input =
+            document.getElementById(
+                type + "Input"
+            );
+
+        const preview =
+            document.getElementById(
+                type + "Preview"
+            );
+
+
+        if (input) {
+            input.value = "";
+        }
+
+
+        if (preview) {
+
+            preview.innerHTML = `
+
+                <div class="upload-icon">
+                    <i class="bi bi-person-standing"></i>
+                </div>
+
+                <strong>
+                    ${type.charAt(0).toUpperCase() + type.slice(1)}
+                    View
+                </strong>
+
+                <span>
+                    Click or drop image here
+                </span>
+
+            `;
+
+        }
+
+
+        localStorage.removeItem(
+            "bodyPhoto_" + type
+        );
+
+    }
+
+
+    uploadTypes.forEach(
+        setupUpload
+    );
+
+
+    /* =========================================================
+       RESTORE UPLOADS
+    ========================================================= */
+
+    function restoreImages() {
+
+        uploadTypes.forEach(
+            function(type) {
+
+                const saved =
+                    S.get(
+                        "bodyPhoto_" + type,
+                        null
+                    );
+
+
+                if (!saved) return;
+
+
+                const preview =
+                    document.getElementById(
+                        type + "Preview"
+                    );
+
+
+                if (!preview) return;
+
+
+                preview.innerHTML = `
+
+                    <img
+                        class="preview-image"
+                        src="${saved}"
+                        alt="${type} body view"
+                    >
+
+                    <button
+                        type="button"
+                        class="remove-image"
+                        data-type="${type}"
+                        aria-label="Remove image"
+                    >
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+
+                `;
+
+
+                const removeButton =
+                    preview.querySelector(
+                        ".remove-image"
+                    );
+
+
+                if (removeButton) {
+
+                    removeButton.addEventListener(
+                        "click",
+                        function(event) {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+                            removeImage(
+                                type
+                            );
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    restoreImages();
+
+
+    /* =========================================================
+       ACTIVITY
+    ========================================================= */
+
+    let activityMultiplier =
+        S.get(
+            "activityMultiplier",
+            1.2
+        );
+
+
+    document
+        .querySelectorAll(
+            ".activity-btn"
+        )
+        .forEach(function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    document
+                        .querySelectorAll(
+                            ".activity-btn"
+                        )
+                        .forEach(function(btn) {
+
+                            btn.classList.remove(
+                                "active"
+                            );
+
+                        });
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    activityMultiplier =
+                        Number(
+                            button.dataset.value
+                        );
+
+
+                    S.set(
+                        "activityMultiplier",
+                        activityMultiplier
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =========================================================
+       RESTORE ACTIVITY
+    ========================================================= */
+
+    document
+        .querySelectorAll(
+            ".activity-btn"
+        )
+        .forEach(function(button) {
+
+            if (
+                Number(
+                    button.dataset.value
+                ) ===
+                Number(activityMultiplier)
+            ) {
+
+                document
+                    .querySelectorAll(
+                        ".activity-btn"
+                    )
+                    .forEach(function(btn) {
+
+                        btn.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+        });
+
+
+    /* =========================================================
+       VALIDATION
+    ========================================================= */
+
+    function getMeasurements() {
+
+        const weight =
+            Number(
+                document.getElementById(
+                    "weight"
+                ).value
+            );
+
+
+        const height =
+            Number(
+                document.getElementById(
+                    "height"
+                ).value
+            );
+
+
+        const age =
+            Number(
+                document.getElementById(
+                    "age"
+                ).value
+            );
+
+
+        const gender =
+            document.getElementById(
+                "gender"
+            ).value;
+
+
+        if (
+            !weight ||
+            weight < 1
+        ) {
+
+            alert(
+                "Please enter a valid weight."
+            );
+
+            return null;
+
+        }
+
+
+        if (
+            !height ||
+            height < 50
+        ) {
+
+            alert(
+                "Please enter a valid height."
+            );
+
+            return null;
+
+        }
+
+
+        if (
+            !age ||
+            age < 10 ||
+            age > 100
+        ) {
+
+            alert(
+                "Please enter a valid age."
+            );
+
+            return null;
+
+        }
+
+
+        if (!gender) {
+
+            alert(
+                "Please select your gender."
+            );
+
+            return null;
+
+        }
+
+
+        return {
+            weight,
+            height,
+            age,
+            gender
+        };
+
+    }
+
+
+    /* =========================================================
+       BMI
+    ========================================================= */
+
+    function getBMI(
+        weight,
+        height
+    ) {
+
+        const heightMeters =
+            height / 100;
+
+
+        return Number(
+            (
+                weight /
+                (
+                    heightMeters *
+                    heightMeters
+                )
+            ).toFixed(1)
+        );
+
+    }
+
+
+    function getBMIStatus(bmi) {
+
+        if (bmi < 18.5) {
+            return "UNDERWEIGHT";
+        }
+
+        if (bmi < 25) {
+            return "NORMAL";
+        }
+
+        if (bmi < 30) {
+            return "OVERWEIGHT";
+        }
+
+        return "OBESITY";
+
+    }
+
+
+    /* =========================================================
+       BMR
+       Mifflin-St Jeor
+    ========================================================= */
+
+    function getBMR(
+        weight,
+        height,
+        age,
+        gender
+    ) {
+
+        if (gender === "male") {
+
+            return Math.round(
+                (
+                    10 * weight
+                ) +
+                (
+                    6.25 * height
+                ) -
+                (
+                    5 * age
+                ) +
+                5
+            );
+
+        }
+
+
+        return Math.round(
+            (
+                10 * weight
+            ) +
+            (
+                6.25 * height
+            ) -
+            (
+                5 * age
+            ) -
+            161
+        );
+
+    }
+
+
+    /* =========================================================
+       IDEAL WEIGHT
+       BMI 18.5 - 24.9 range
+    ========================================================= */
+
+    function getIdealWeightRange(
+        height
+    ) {
+
+        const heightMeters =
+            height / 100;
+
+
+        const min =
+            18.5 *
+            heightMeters *
+            heightMeters;
+
+
+        const max =
+            24.9 *
+            heightMeters *
+            heightMeters;
+
+
+        return {
+            min: min.toFixed(1),
+            max: max.toFixed(1)
+        };
+
+    }
+
+
+    /* =========================================================
+       BMI PROGRESS
+    ========================================================= */
+
+    function getBMIProgress(bmi) {
+
+        const percent =
+            (
+                Math.min(
+                    Math.max(
+                        bmi,
+                        10
+                    ),
+                    40
+                ) - 10
+            ) / 30 * 100;
+
+
+        return Math.round(
+            percent
+        );
+
+    }
+
+
+    /* =========================================================
+       AI INSIGHT
+    ========================================================= */
+
+    function getInsight(
+        bmi,
+        gender,
+        activity
+    ) {
+
+        if (bmi < 18.5) {
+
+            return {
+                title:
+                    "Focus on healthy weight gain",
+
+                text:
+                    "Your estimated BMI is below the standard adult reference range. Focus on balanced meals, adequate protein, strength training and gradual progress."
+            };
+
+        }
+
+
+        if (bmi < 25) {
+
+            if (
+                activity >= 1.55
+            ) {
+
+                return {
+                    title:
+                        "Strong foundation for progress",
+
+                    text:
+                        "Your estimated BMI falls in the normal adult reference range and your activity level is active. Maintain consistent strength training, recovery and balanced nutrition."
+                };
+
+            }
+
+
+            return {
+                title:
+                    "Build consistency",
+
+                text:
+                    "Your estimated BMI falls in the normal adult reference range. A consistent workout routine, balanced nutrition and regular daily movement can help improve fitness."
+            };
+
+        }
+
+
+        if (bmi < 30) {
+
+            return {
+                title:
+                    "Prioritize sustainable progress",
+
+                text:
+                    "Your estimated BMI falls in the overweight adult reference range. Focus on sustainable activity, balanced nutrition and gradual progress rather than extreme dieting."
+            };
+
+        }
+
+
+        return {
+            title:
+                "Start with sustainable habits",
+
+            text:
+                "Your estimated BMI is in the obesity adult reference range. Consider gradual lifestyle changes and professional guidance when appropriate. Avoid extreme diets or rapid weight-loss approaches."
+        };
+
+    }
+
+
+    /* =========================================================
+       ANALYZE
+    ========================================================= */
+
+    const analyzeBtn =
+        document.getElementById(
+            "analyzeBtn"
+        );
+
+
+    if (analyzeBtn) {
+
+        analyzeBtn.addEventListener(
+            "click",
+            function() {
+
+                const data =
+                    getMeasurements();
+
+
+                if (!data) {
+                    return;
+                }
+
+
+                analyzeBtn.disabled =
+                    true;
+
+
+                analyzeBtn.innerHTML = `
+
+                    <span>
+                        <i class="bi bi-arrow-repeat"></i>
+                        Analyzing...
+                    </span>
+
+                    <i class="bi bi-cpu"></i>
+
+                `;
+
+
+                setTimeout(
+                    function() {
+
+                        const bmi =
+                            getBMI(
+                                data.weight,
+                                data.height
+                            );
+
+
+                        const bmr =
+                            getBMR(
+                                data.weight,
+                                data.height,
+                                data.age,
+                                data.gender
+                            );
+
+
+                        const calories =
+                            Math.round(
+                                bmr *
+                                activityMultiplier
+                            );
+
+
+                        const ideal =
+                            getIdealWeightRange(
+                                data.height
+                            );
+
+
+                        const status =
+                            getBMIStatus(
+                                bmi
+                            );
+
+
+                        const progress =
+                            getBMIProgress(
+                                bmi
+                            );
+
+
+                        const insight =
+                            getInsight(
+                                bmi,
+                                data.gender,
+                                activityMultiplier
+                            );
+
+
+                        document.getElementById(
+                            "bmiResult"
+                        ).textContent =
+                            bmi;
+
+
+                        document.getElementById(
+                            "bmiStatus"
+                        ).textContent =
+                            status;
+
+
+                        document.getElementById(
+                            "bmrResult"
+                        ).textContent =
+                            bmr.toLocaleString();
+
+
+                        document.getElementById(
+                            "calorieResult"
+                        ).textContent =
+                            calories.toLocaleString();
+
+
+                        document.getElementById(
+                            "idealWeight"
+                        ).textContent =
+                            ideal.min +
+                            "–" +
+                            ideal.max;
+
+
+                        document.getElementById(
+                            "weightResult"
+                        ).textContent =
+                            data.weight +
+                            " kg";
+
+
+                        document.getElementById(
+                            "heightResult"
+                        ).textContent =
+                            data.height +
+                            " cm";
+
+
+                        document.getElementById(
+                            "fitnessCategory"
+                        ).textContent =
+                            status;
+
+
+                        document.getElementById(
+                            "aiTitle"
+                        ).textContent =
+                            insight.title;
+
+
+                        document.getElementById(
+                            "aiText"
+                        ).textContent =
+                            insight.text;
+
+
+                        document.getElementById(
+                            "bmiProgress"
+                        ).style.width =
+                            progress +
+                            "%";
+
+
+                        document.getElementById(
+                            "results"
+                        ).classList.add(
+                            "show"
+                        );
+
+
+                        S.set(
+                            "analysis",
+                            {
+                                weight:
+                                    data.weight,
+
+                                height:
+                                    data.height,
+
+                                age:
+                                    data.age,
+
+                                gender:
+                                    data.gender,
+
+                                bmi,
+
+                                bmr,
+
+                                calories,
+
+                                idealWeightMin:
+                                    ideal.min,
+
+                                idealWeightMax:
+                                    ideal.max,
+
+                                bmiStatus:
+                                    status,
+
+                                analyzedAt:
+                                    Date.now()
+                            }
+                        );
+
+
+                        S.set(
+                            "bmi",
+                            bmi
+                        );
+
+
+                        S.set(
+                            "calories",
+                            calories
+                        );
+
+
+                        S.set(
+                            "weight",
+                            data.weight
+                        );
+
+
+                        S.set(
+                            "height",
+                            data.height
+                        );
+
+
+                        analyzeBtn.disabled =
+                            false;
+
+
+                        analyzeBtn.innerHTML = `
+
+                            <span>
+                                <i class="bi bi-stars"></i>
+                                Analyze My Body
+                            </span>
+
+                            <i class="bi bi-arrow-right"></i>
+
+                        `;
+
+
+                        document
+                            .getElementById(
+                                "results"
+                            )
+                            .scrollIntoView({
+                                behavior:
+                                    "smooth",
+                                block:
+                                    "start"
+                            });
+
+                    },
+                    650
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       RESTORE LAST ANALYSIS
+    ========================================================= */
+
+    function restoreAnalysis() {
+
+        const data =
+            S.get(
+                "analysis",
+                null
+            );
+
+
+        if (!data) return;
+
+
+        const weightInput =
+            document.getElementById(
+                "weight"
+            );
+
+        const heightInput =
+            document.getElementById(
+                "height"
+            );
+
+        const ageInput =
+            document.getElementById(
+                "age"
+            );
+
+        const genderInput =
+            document.getElementById(
+                "gender"
+            );
+
+
+        if (weightInput)
+            weightInput.value =
+                data.weight || "";
+
+
+        if (heightInput)
+            heightInput.value =
+                data.height || "";
+
+
+        if (ageInput)
+            ageInput.value =
+                data.age || "";
+
+
+        if (genderInput)
+            genderInput.value =
+                data.gender || "";
+
+
+        if (
+            data.bmi === undefined
+        ) {
+            return;
+        }
+
+
+        document.getElementById(
+            "bmiResult"
+        ).textContent =
+            data.bmi;
+
+
+        document.getElementById(
+            "bmiStatus"
+        ).textContent =
+            data.bmiStatus;
+
+
+        document.getElementById(
+            "bmrResult"
+        ).textContent =
+            Number(
+                data.bmr
+            ).toLocaleString();
+
+
+        document.getElementById(
+            "calorieResult"
+        ).textContent =
+            Number(
+                data.calories
+            ).toLocaleString();
+
+
+        document.getElementById(
+            "idealWeight"
+        ).textContent =
+            data.idealWeightMin +
+            "–" +
+            data.idealWeightMax;
+
+
+        document.getElementById(
+            "weightResult"
+        ).textContent =
+            data.weight +
+            " kg";
+
+
+        document.getElementById(
+            "heightResult"
+        ).textContent =
+            data.height +
+            " cm";
+
+
+        document.getElementById(
+            "fitnessCategory"
+        ).textContent =
+            data.bmiStatus;
+
+
+        const insight =
+            getInsight(
+                data.bmi,
+                data.gender,
+                activityMultiplier
+            );
+
+
+        document.getElementById(
+            "aiTitle"
+        ).textContent =
+            insight.title;
+
+
+        document.getElementById(
+            "aiText"
+        ).textContent =
+            insight.text;
+
+
+        document.getElementById(
+            "bmiProgress"
+        ).style.width =
+            getBMIProgress(
+                data.bmi
+            ) + "%";
+
+
+        document.getElementById(
+            "results"
+        ).classList.add(
+            "show"
+        );
+
+    }
+
+
+    restoreAnalysis();
+
+
+    /* =========================================================
+       THEME BUTTON
+    ========================================================= */
+
+    const themeToggle =
+        document.getElementById(
+            "themeToggle"
+        );
+
+
+    if (themeToggle) {
+
+        themeToggle.addEventListener(
+            "click",
+            toggleTheme
+        );
+
+        updateThemeToggle();
+
+    }
+
+
+    /* =========================================================
+       LOGOUT
+    ========================================================= */
+
+    const logoutBtn =
+        document.getElementById(
+            "logoutBtn"
+        );
+
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener(
+            "click",
+            function() {
+
+                localStorage.removeItem(
+                    "fitnessLoggedIn"
+                );
+
+                localStorage.removeItem(
+                    "fitnessUserRole"
+                );
+
+                localStorage.removeItem(
+                    "fitnessUserEmail"
+                );
+
+
+                location.href =
+                    "login.html";
+
+            }
+        );
+
+    }
+
+</script>
+<script src="./js/profile.js"></script>
+<script src="./js/app.js"></script>
+
+</body>
+</html>
+

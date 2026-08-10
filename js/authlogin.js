@@ -94,42 +94,43 @@ if (login) {
                 // ADMIN LOGIN
                 // ==========================================
 
-                if (
-                    user.email ===
-                    "admin@example.com" &&
-                    passwordValue ===
-                    "admin"
-                ) {
+               // ==========================================
+// ADMIN LOGIN
+// ==========================================
 
-                    saveSession(
-                        "admin",
-                        user.email
-                    );
+if (
+    user.email ===
+    "admin@gmail.com" &&
+    passwordValue ===
+    "admin123"
+) {
 
+    saveSession(
+        "admin",
+        user.email
+    );
 
-                    Swal.fire({
+    Swal.fire({
 
-                        title:
-                            "Success",
+        title:
+            "Success",
 
-                        text:
-                            "Admin login successful",
+        text:
+            "Admin login successful",
 
-                        icon:
-                            "success"
+        icon:
+            "success"
 
-                    }).then(() => {
+    }).then(() => {
 
-                        window.location.replace(
-                            "admin.html"
-                        );
+        window.location.replace(
+            "admin.html"
+        );
 
-                    });
+    });
 
-
-                    return;
-                }
-
+    return;
+}
 
                 // ==========================================
                 // STUDENT LOGIN
